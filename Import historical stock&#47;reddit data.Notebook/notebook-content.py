@@ -77,10 +77,6 @@ final_spark_df = final_spark_df.withColumn("Date",col("Date").cast("date"))
 display(final_spark_df)
 final_spark_df.write.mode("overwrite").format("delta").saveAsTable("stock_data")
 
-
-
-
-
 # METADATA ********************
 
 # META {
@@ -176,6 +172,28 @@ df = df.withColumn("stock_name",regexp_extract(col("ticker"), r"\[([A-Za-z]+)", 
 display(df)
 git
 df.write.format("delta").mode("overwrite").option("mergeSchema",True).saveAsTable("reddit_raw")
+
+# METADATA ********************
+
+# META {
+# META   "language": "python",
+# META   "language_group": "synapse_pyspark"
+# META }
+
+# CELL ********************
+
+
+# METADATA ********************
+
+# META {
+# META   "language": "python",
+# META   "language_group": "synapse_pyspark"
+# META }
+
+# CELL ********************
+
+df = spark.sql("SELECT * FROM Reddit_Data.stock_data LIMIT 1000")
+display(df)
 
 # METADATA ********************
 

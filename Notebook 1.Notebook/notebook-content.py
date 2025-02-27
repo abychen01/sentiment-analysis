@@ -221,7 +221,7 @@ all_stock_data = []
 
 for ticker in tickers:
     # Fetch historical data from Yahoo Finance
-    df = yf.Ticker(ticker).history(period="1d").reset_index()
+    df = yf.Ticker(ticker).history(period="2d").reset_index()
 
     # Convert Pandas DataFrame to PySpark DataFrame
     spark_df = spark.createDataFrame(df)
@@ -236,7 +236,7 @@ for ticker in tickers:
 final_spark_df = reduce(DataFrame.union, all_stock_data)
 final_spark_df = final_spark_df.withColumn("Date",final_spark_df.Date.cast(DateType()))
 display(final_spark_df)
-#final_spark_df.write.mode("overwrite").format("delta").saveAsTable("stock_data")
+final_spark_df.write.mode("overwrite").format("delta").saveAsTable("temp_stock_data")
 
 
 # METADATA ********************
@@ -256,6 +256,31 @@ display(df.sort(desc("time_utc")))
 
 # META {
 # META   "language": "python",
+# META   "language_group": "synapse_pyspark"
+# META }
+
+# CELL ********************
+
+df = spark.sql("SELECT * FROM Reddit_Data.temp_stock_data LIMIT 1000")
+display(df.orderBy("Date"))
+
+# METADATA ********************
+
+# META {
+# META   "language": "python",
+# META   "language_group": "synapse_pyspark"
+# META }
+
+# CELL ********************
+
+# MAGIC %%sql
+# MAGIC delete from temp_stock_data
+# MAGIC where Date = '2025-03-02'
+
+# METADATA ********************
+
+# META {
+# META   "language": "sparksql",
 # META   "language_group": "synapse_pyspark"
 # META }
 
