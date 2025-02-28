@@ -1,12 +1,11 @@
 {
   "$schema": "https://developer.microsoft.com/json-schemas/fabric/gitIntegration/platformProperties/2.0.0/schema.json",
   "metadata": {
-    "type": "Notebook",
-    "displayName": "Daily Reddit data ETL",
-    "description": "New notebook"
+    "type": "DataPipeline",
+    "displayName": "Daily ETL"
   },
   "config": {
     "version": "2.0",
-    "logicalId": "02a3b399-6ca1-b0e4-406d-323a2597cc57"
+    "logicalId": "0bbb08e6-c6d1-89d7-4ee3-1e3382fcad6e"
   }
 }

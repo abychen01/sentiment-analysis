@@ -1,11 +1,12 @@
 {
   "$schema": "https://developer.microsoft.com/json-schemas/fabric/gitIntegration/platformProperties/2.0.0/schema.json",
   "metadata": {
-    "type": "Dataflow",
-    "displayName": "incremental data load"
+    "type": "Notebook",
+    "displayName": "Daily stock data ETL",
+    "description": "New notebook"
   },
   "config": {
     "version": "2.0",
-    "logicalId": "f8979106-5f83-985a-4c8e-9ad930ef2f05"
+    "logicalId": "da6af546-5320-9e8b-48be-708bb6e9f6f1"
   }
 }

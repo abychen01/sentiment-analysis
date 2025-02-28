@@ -34,6 +34,9 @@ pip install praw textblob pyspark
 
 # CELL ********************
 
+# testing........
+
+
 import praw
 from pyspark.sql.functions import *
 from pyspark.sql.types import *
@@ -81,6 +84,11 @@ df2 = spark.createDataFrame(query1, schema=schema1)
 name_list = df.select("names").collect()[0]["names"]  # Extract the array
 ticker_list =df2.collect()
 
+dff = spark.read.table("reddit_raw")
+dff = dff.select(dff.time_utc).orderBy(desc(dff.time_utc)).limit(1)
+dff = (dff.withColumn("time_utc",unix_timestamp(dff.time_utc)))
+max_timestamp = dff.select("time_utc").collect()[0][0]
+
 x = 0
 y = 0
 for y in range(10):
@@ -88,7 +96,7 @@ for y in range(10):
         subreddit_name = name  
         for submission in reddit.subreddit(subreddit_name).\
             search(ticker_list[y]["ticker"], sort = "new", limit=1000):
-            if submission.created_utc > 1640995200:  
+            if submission.created_utc > max_timestamp:  
                 comments_list.append((subreddit_name, submission.title, submission.score,\
                 submission.created_utc,ticker_list[y]["ticker"]))
 
@@ -104,31 +112,10 @@ df = spark.createDataFrame(comments_list, schema = schema)
 
 df = df.withColumn("time_utc", col("time_utc").cast("bigint"))
 df = df.withColumn("time_utc", from_unixtime(col("time_utc")).cast("timestamp"))
-display(df)
-
-# METADATA ********************
-
-# META {
-# META   "language": "python",
-# META   "language_group": "synapse_pyspark"
-# META }
-
-# CELL ********************
-
 df = df.withColumn("stock_name",regexp_extract(col("ticker"), r"\[([A-Za-z]+)", 1))\
     .withColumn("ticker_id",regexp_extract(col("ticker"), r"\$([A-Za-z]+)", 1))
+df = df.drop("ticker","actual_ticker")
 
-
-# METADATA ********************
-
-# META {
-# META   "language": "python",
-# META   "language_group": "synapse_pyspark"
-# META }
-
-# CELL ********************
-
-df.write.format("delta").mode("overwrite").option("mergeSchema",True).saveAsTable("reddit_raw_tesla")
 
 # METADATA ********************
 
@@ -154,8 +141,6 @@ from pyspark.sql.functions import udf
 from pyspark.sql.types import StringType
 from transformers import pipeline
 
-df = spark.read.table("reddit_raw_tesla")
-
 # Load pre-trained BERT sentiment model
 sentiment_pipeline = pipeline("sentiment-analysis", model="cardiffnlp/twitter-roberta-base-sentiment")
 
@@ -176,111 +161,12 @@ df3 = df.withColumn("sentiment_label", bert_sentiment_udf(df["post_title"]))
 
 # Show results
 display(df3.sort("time_utc"))
-
-
-# METADATA ********************
-
-# META {
-# META   "language": "python",
-# META   "language_group": "synapse_pyspark"
-# META }
-
-# CELL ********************
-
-pip install yfinance
+df3.write.format("delta").mode("append").option("mergeSchema",True).saveAsTable("reddit_data")
 
 # METADATA ********************
 
 # META {
 # META   "language": "python",
-# META   "language_group": "synapse_pyspark"
-# META }
-
-# CELL ********************
-
-import yfinance as yf
-from pyspark.sql.types import *
-from pyspark.sql.functions import *
-from functools import reduce
-
-# Define stock tickers
-ticker_list = ["TSLA", "MSFT", "AAPL", "NVDA", "GOOGL", "AMZN", "META", "AVGO", "TSM"]
-
-# Define schema
-schema = StructType([
-    StructField("tickers", ArrayType(StringType()), True)
-])
-
-# Create DataFrame of tickers
-ticker_df = spark.createDataFrame([(ticker_list,)], schema=schema)
-
-# Extract ticker list from DataFrame
-tickers = ticker_df.collect()[0]["tickers"]  # Convert PySpark DataFrame to Python list
-
-all_stock_data = []
-
-for ticker in tickers:
-    # Fetch historical data from Yahoo Finance
-    df = yf.Ticker(ticker).history(period="2d").reset_index()
-
-    # Convert Pandas DataFrame to PySpark DataFrame
-    spark_df = spark.createDataFrame(df)
-
-    # Select relevant columns and add ticker name
-    spark_df = spark_df.select("Date", "Close").withColumn("ticker", lit(ticker))
-
-    # Collect all stock data
-    all_stock_data.append(spark_df)
-
-# Combine all DataFrames into one
-final_spark_df = reduce(DataFrame.union, all_stock_data)
-final_spark_df = final_spark_df.withColumn("Date",final_spark_df.Date.cast(DateType()))
-display(final_spark_df)
-final_spark_df.write.mode("overwrite").format("delta").saveAsTable("temp_stock_data")
-
-
-# METADATA ********************
-
-# META {
-# META   "language": "python",
-# META   "language_group": "synapse_pyspark"
-# META }
-
-# CELL ********************
-
-df = spark.read.table("reddit_raw")
-display(df.count())
-display(df.sort(desc("time_utc")))
-
-# METADATA ********************
-
-# META {
-# META   "language": "python",
-# META   "language_group": "synapse_pyspark"
-# META }
-
-# CELL ********************
-
-df = spark.sql("SELECT * FROM Reddit_Data.temp_stock_data LIMIT 1000")
-display(df.orderBy("Date"))
-
-# METADATA ********************
-
-# META {
-# META   "language": "python",
-# META   "language_group": "synapse_pyspark"
-# META }
-
-# CELL ********************
-
-# MAGIC %%sql
-# MAGIC delete from temp_stock_data
-# MAGIC where Date = '2025-03-02'
-
-# METADATA ********************
-
-# META {
-# META   "language": "sparksql",
 # META   "language_group": "synapse_pyspark"
 # META }
 

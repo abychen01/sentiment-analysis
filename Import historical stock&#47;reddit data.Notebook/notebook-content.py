@@ -170,8 +170,8 @@ df = df.withColumn("time_utc", from_unixtime(col("time_utc")).cast("timestamp"))
 df = df.withColumn("stock_name",regexp_extract(col("ticker"), r"\[([A-Za-z]+)", 1))\
     .withColumn("ticker_id",regexp_extract(col("ticker"), r"\$([A-Za-z]+)", 1))
 display(df)
-git
-df.write.format("delta").mode("overwrite").option("mergeSchema",True).saveAsTable("reddit_raw")
+
+#df.write.format("delta").mode("overwrite").option("mergeSchema",True).saveAsTable("reddit_raw")
 
 # METADATA ********************
 
@@ -182,18 +182,93 @@ df.write.format("delta").mode("overwrite").option("mergeSchema",True).saveAsTabl
 
 # CELL ********************
 
-
-# METADATA ********************
-
-# META {
-# META   "language": "python",
-# META   "language_group": "synapse_pyspark"
-# META }
-
-# CELL ********************
-
-df = spark.sql("SELECT * FROM Reddit_Data.stock_data LIMIT 1000")
+df = spark.read.table("reddit_raw")
+df = df.drop("ticker","actual_ticker")
+df.write.mode("overwrite").option("mergeSchema",True).format("delta").saveAsTable("reddit_data")
 display(df)
+
+# METADATA ********************
+
+# META {
+# META   "language": "python",
+# META   "language_group": "synapse_pyspark"
+# META }
+
+# CELL ********************
+
+pip install textblob
+
+# METADATA ********************
+
+# META {
+# META   "language": "python",
+# META   "language_group": "synapse_pyspark"
+# META }
+
+# CELL ********************
+
+from pyspark.sql.functions import udf
+from pyspark.sql.types import StringType
+from transformers import pipeline
+
+df = spark.read.table("reddit_data")
+
+# Load pre-trained BERT sentiment model
+sentiment_pipeline = pipeline("sentiment-analysis", model="cardiffnlp/twitter-roberta-base-sentiment")
+
+# Define function for BERT-based sentiment analysis
+def get_bert_sentiment(text):
+    if text is None:
+        return "neutral"
+    result = sentiment_pipeline(text)[0]
+    label_map = {"LABEL_0": "negative", "LABEL_1": "neutral", "LABEL_2": "positive"}  # Ensure correct mapping
+    
+    return label_map.get(result["label"], "neutral")  
+
+# Convert function to UDF
+bert_sentiment_udf = udf(get_bert_sentiment, StringType())
+
+# Apply to DataFrame
+df3 = df.withColumn("sentiment_label", bert_sentiment_udf(df["post_title"]))
+
+# Show results
+display(df3.sort("time_utc"))
+
+
+# METADATA ********************
+
+# META {
+# META   "language": "python",
+# META   "language_group": "synapse_pyspark"
+# META }
+
+# CELL ********************
+
+from pyspark.sql.functions import *
+from pyspark.sql.types import *
+
+schema = StructType([
+    StructField("output",StringType())
+])
+list = []
+#list.append(lit("ss"))
+#spark.sql("insert into ")
+df = spark.createDataFrame(list,schema = schema)
+display(df)
+df.write.format("delta").mode("append").saveAsTable("log")
+
+# METADATA ********************
+
+# META {
+# META   "language": "python",
+# META   "language_group": "synapse_pyspark"
+# META }
+
+# CELL ********************
+
+spark.sql("insert into log values 'yes'")
+df2 = spark.sql("select * from log")
+display(df2)
 
 # METADATA ********************
 
