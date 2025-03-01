@@ -1,0 +1,85 @@
+table reddit_data
+	lineageTag: 4bb2663a-4b69-47b9-b1f7-1d00f10fab07
+	sourceLineageTag: [dbo].[reddit_data]
+
+	column post_title
+		dataType: string
+		sourceProviderType: varchar
+		lineageTag: 7ea152a9-c5ab-4943-bd66-910187d166c2
+		sourceLineageTag: post_title
+		summarizeBy: none
+		sourceColumn: post_title
+
+		annotation SummarizationSetBy = Automatic
+
+	column score
+		dataType: int64
+		formatString: 0
+		sourceProviderType: int
+		lineageTag: 11ed284b-cb72-4adc-8234-43bdfcf54c89
+		sourceLineageTag: score
+		summarizeBy: sum
+		sourceColumn: score
+
+		annotation SummarizationSetBy = Automatic
+
+	column time_utc
+		dataType: dateTime
+		formatString: General Date
+		sourceProviderType: datetime2
+		lineageTag: c4b3554a-c6cd-4582-b4fc-a13c1252dacf
+		sourceLineageTag: time_utc
+		summarizeBy: none
+		sourceColumn: time_utc
+
+		annotation SummarizationSetBy = Automatic
+
+	column subreddit_name
+		dataType: string
+		sourceProviderType: varchar
+		lineageTag: c0948007-b09a-4cba-88a9-c352eb9fc9e9
+		sourceLineageTag: subreddit_name
+		summarizeBy: none
+		sourceColumn: subreddit_name
+
+		annotation SummarizationSetBy = Automatic
+
+	column stock_name
+		dataType: string
+		sourceProviderType: varchar
+		lineageTag: bcb627c0-0628-4176-a7b3-c92f6551de6a
+		sourceLineageTag: stock_name
+		summarizeBy: none
+		sourceColumn: stock_name
+
+		annotation SummarizationSetBy = Automatic
+
+	column ticker_id
+		dataType: string
+		sourceProviderType: varchar
+		lineageTag: 6765d38f-de4e-42cf-92f6-09180ca9a4b7
+		sourceLineageTag: ticker_id
+		summarizeBy: none
+		sourceColumn: ticker_id
+
+		annotation SummarizationSetBy = Automatic
+
+	column sentiment_label
+		dataType: string
+		sourceProviderType: varchar
+		lineageTag: 0e0a25df-0c4c-410e-ab45-abe10f255b2b
+		sourceLineageTag: sentiment_label
+		summarizeBy: none
+		sourceColumn: sentiment_label
+
+		annotation SummarizationSetBy = Automatic
+
+	partition reddit_data-1b675e90-1b31-416a-a0c3-3e3465989ef7 = entity
+		mode: directLake
+		source
+			entityName: reddit_data
+			schemaName: dbo
+			expressionSource: DatabaseQuery
+
+	annotation IsTableInBiModel = True
+

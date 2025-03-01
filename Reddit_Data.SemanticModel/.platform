@@ -1,0 +1,11 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/gitIntegration/platformProperties/2.0.0/schema.json",
+  "metadata": {
+    "type": "SemanticModel",
+    "displayName": "Reddit_Data"
+  },
+  "config": {
+    "version": "2.0",
+    "logicalId": "0ea78c1c-e7ee-8077-4bae-5e5123157178"
+  }
+}

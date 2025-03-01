@@ -1,0 +1,17 @@
+model 23157178-5e51-4bae-8077-e7ee0ea78c1c
+	culture: en-US
+	collation: Latin1_General_100_BIN2_UTF8
+	defaultPowerBIDataSourceVersion: powerBI_V3
+	sourceQueryCulture: en-US
+	dataAccessOptions
+		legacyRedirects
+		returnErrorValuesAsNull
+
+annotation __PBI_TimeIntelligenceEnabled = 0
+
+annotation PBI_QueryOrder = ["exec_requests_history","long_running_queries","frequently_run_queries","exec_sessions_history","log","reddit_data","temp_stock_data"]
+
+annotation SourceLineageTagType = DatabaseFullyQualifiedName
+
+ref table reddit_data
+

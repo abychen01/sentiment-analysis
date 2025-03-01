@@ -1,0 +1,46 @@
+table stock_data
+	lineageTag: fb9a45ae-f29e-4c19-abc6-d5ba0a243686
+	sourceLineageTag: [dbo].[stock_data]
+
+	column trade_date
+		dataType: dateTime
+		formatString: General Date
+		sourceProviderType: date
+		lineageTag: 2eeb05d7-bd58-49d2-bad1-9f1eb0c45809
+		sourceLineageTag: trade_date
+		summarizeBy: none
+		sourceColumn: trade_date
+
+		annotation SummarizationSetBy = Automatic
+
+	column closing_price
+		dataType: double
+		sourceProviderType: float
+		lineageTag: 07ab9420-2b9c-4255-b271-0f76c757f8b0
+		sourceLineageTag: closing_price
+		summarizeBy: sum
+		sourceColumn: closing_price
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	column ticker
+		dataType: string
+		sourceProviderType: varchar
+		lineageTag: acf38219-b1b3-49cf-97d0-eb08929e7cd4
+		sourceLineageTag: ticker
+		summarizeBy: none
+		sourceColumn: ticker
+
+		annotation SummarizationSetBy = Automatic
+
+	partition stock_data-5aa9cd79-7a72-4e79-9271-0e31669730d0 = entity
+		mode: directLake
+		source
+			entityName: stock_data
+			schemaName: dbo
+			expressionSource: DatabaseQuery
+
+	annotation IsTableInBiModel = True
+
