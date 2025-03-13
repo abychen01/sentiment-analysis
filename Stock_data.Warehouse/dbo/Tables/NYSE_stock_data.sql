@@ -1,4 +1,4 @@
-CREATE TABLE [dbo].[stock_data] (
+CREATE TABLE [dbo].[NYSE_stock_data] (
 
 	[trade_date] date NULL, 
 	[closing_price] float NULL, 

@@ -60,7 +60,7 @@ all_stock_data = []
 
 for ticker in tickers:
     # Fetch historical data from Yahoo Finance
-    df = yf.Ticker(ticker).history(period="4d").reset_index()
+    df = yf.Ticker(ticker).history(period="1d").reset_index()
 
     # Convert Pandas DataFrame to PySpark DataFrame
     spark_df = spark.createDataFrame(df)
@@ -94,5 +94,12 @@ final_spark_df.write.mode("overwrite").format("delta").saveAsTable("temp_stock_d
 # META   "language_group": "synapse_pyspark"
 # META }
 
-# MARKDOWN ********************
+# CELL ********************
 
+
+# METADATA ********************
+
+# META {
+# META   "language": "python",
+# META   "language_group": "synapse_pyspark"
+# META }

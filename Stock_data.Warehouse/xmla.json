@@ -140,62 +140,8 @@
         ]
       },
       {
-        "name": "nyse_calendar_2025",
-        "sourceLineageTag": "[dbo].[nyse_calendar_2025]",
-        "columns": [
-          {
-            "name": "date_value",
-            "dataType": "dateTime",
-            "sourceColumn": "date_value",
-            "formatString": "General Date",
-            "sourceProviderType": "date",
-            "sourceLineageTag": "date_value",
-            "summarizeBy": "none",
-            "annotations": [
-              {
-                "name": "SummarizationSetBy",
-                "value": "Automatic"
-              }
-            ]
-          },
-          {
-            "name": "is_nyse_holiday",
-            "dataType": "boolean",
-            "sourceColumn": "is_nyse_holiday",
-            "formatString": "\"TRUE\";\"TRUE\";\"FALSE\"",
-            "sourceProviderType": "bit",
-            "sourceLineageTag": "is_nyse_holiday",
-            "summarizeBy": "none",
-            "annotations": [
-              {
-                "name": "SummarizationSetBy",
-                "value": "Automatic"
-              }
-            ]
-          }
-        ],
-        "partitions": [
-          {
-            "name": "{{Partition_Name}}",
-            "mode": "directLake",
-            "source": {
-              "type": "entity",
-              "entityName": "nyse_calendar_2025",
-              "expressionSource": "DatabaseQuery",
-              "schemaName": "dbo"
-            }
-          }
-        ],
-        "annotations": [
-          {
-            "name": "IsTableInBiModel",
-            "value": "False"
-          }
-        ]
-      },
-      {
-        "name": "stock_data",
-        "sourceLineageTag": "[dbo].[stock_data]",
+        "name": "NYSE_stock_data",
+        "sourceLineageTag": "[dbo].[NYSE_stock_data]",
         "columns": [
           {
             "name": "trade_date",
@@ -251,7 +197,7 @@
             "mode": "directLake",
             "source": {
               "type": "entity",
-              "entityName": "stock_data",
+              "entityName": "NYSE_stock_data",
               "expressionSource": "DatabaseQuery",
               "schemaName": "dbo"
             }
@@ -260,7 +206,7 @@
         "annotations": [
           {
             "name": "IsTableInBiModel",
-            "value": "True"
+            "value": "False"
           }
         ]
       }

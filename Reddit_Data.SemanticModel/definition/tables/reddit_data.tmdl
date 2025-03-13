@@ -74,6 +74,17 @@ table reddit_data
 
 		annotation SummarizationSetBy = Automatic
 
+	column time_est
+		dataType: dateTime
+		formatString: General Date
+		sourceProviderType: datetime2
+		lineageTag: e4bf52bc-e552-4848-a81d-095c107febcf
+		sourceLineageTag: time_est
+		summarizeBy: none
+		sourceColumn: time_est
+
+		annotation SummarizationSetBy = Automatic
+
 	partition reddit_data-1b675e90-1b31-416a-a0c3-3e3465989ef7 = entity
 		mode: directLake
 		source

@@ -84,7 +84,7 @@ df2 = spark.createDataFrame(query1, schema=schema1)
 name_list = df.select("names").collect()[0]["names"]  # Extract the array
 ticker_list =df2.collect()
 
-dff = spark.read.table("reddit_raw")
+dff = spark.read.table("reddit_data")
 dff = dff.select(dff.time_utc).orderBy(desc(dff.time_utc)).limit(1)
 dff = (dff.withColumn("time_utc",unix_timestamp(dff.time_utc)))
 max_timestamp = dff.select("time_utc").collect()[0][0]
@@ -111,8 +111,9 @@ schema = StructType([
 df = spark.createDataFrame(comments_list, schema = schema)
 
 df = df.withColumn("time_utc", col("time_utc").cast("bigint"))
-df = df.withColumn("time_utc", from_unixtime(col("time_utc")).cast("timestamp"))
-df = df.withColumn("stock_name",regexp_extract(col("ticker"), r"\[([A-Za-z]+)", 1))\
+df = df.withColumn("time_utc", from_unixtime(col("time_utc")).cast("timestamp"))\
+    .withColumn("time_est",from_utc_timestamp(col("time_utc"), "America/New_York"))\
+    .withColumn("stock_name",regexp_extract(col("ticker"), r"\[([A-Za-z]+)", 1))\
     .withColumn("ticker_id",regexp_extract(col("ticker"), r"\$([A-Za-z]+)", 1))
 df = df.drop("ticker","actual_ticker")
 

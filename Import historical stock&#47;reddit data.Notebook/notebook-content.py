@@ -167,7 +167,8 @@ df = spark.createDataFrame(comments_list, schema = schema)
 
 df = df.withColumn("time_utc", col("time_utc").cast("bigint"))
 df = df.withColumn("time_utc", from_unixtime(col("time_utc")).cast("timestamp"))
-df = df.withColumn("stock_name",regexp_extract(col("ticker"), r"\[([A-Za-z]+)", 1))\
+df = df.withColumn("time_est",from_utc_timestamp(col("time_utc"), "America/New_York"))\
+    .withColumn("stock_name",regexp_extract(col("ticker"), r"\[([A-Za-z]+)", 1))\
     .withColumn("ticker_id",regexp_extract(col("ticker"), r"\$([A-Za-z]+)", 1))
 display(df)
 
@@ -182,9 +183,7 @@ display(df)
 
 # CELL ********************
 
-df = spark.read.table("reddit_raw")
 df = df.drop("ticker","actual_ticker")
-df.write.mode("overwrite").option("mergeSchema",True).format("delta").saveAsTable("reddit_data")
 display(df)
 
 # METADATA ********************
@@ -211,7 +210,7 @@ from pyspark.sql.functions import udf
 from pyspark.sql.types import StringType
 from transformers import pipeline
 
-df = spark.read.table("reddit_data")
+#df = spark.read.table("reddit_data")
 
 # Load pre-trained BERT sentiment model
 sentiment_pipeline = pipeline("sentiment-analysis", model="cardiffnlp/twitter-roberta-base-sentiment")
@@ -233,6 +232,7 @@ df3 = df.withColumn("sentiment_label", bert_sentiment_udf(df["post_title"]))
 
 # Show results
 display(df3.sort("time_utc"))
+#df.write.mode("overwrite").option("mergeSchema",True).format("delta").saveAsTable("reddit_data")
 
 
 # METADATA ********************
@@ -244,31 +244,20 @@ display(df3.sort("time_utc"))
 
 # CELL ********************
 
-from pyspark.sql.functions import *
-from pyspark.sql.types import *
+df3.write.mode("overwrite").option("mergeSchema",True).format("delta").saveAsTable("reddit_data")
 
-schema = StructType([
-    StructField("output",StringType())
-])
-list = []
-#list.append(lit("ss"))
-#spark.sql("insert into ")
-df = spark.createDataFrame(list,schema = schema)
+
+# METADATA ********************
+
+# META {
+# META   "language": "python",
+# META   "language_group": "synapse_pyspark"
+# META }
+
+# CELL ********************
+
+df = spark.read.table("Reddit_Data.reddit_data")
 display(df)
-df.write.format("delta").mode("append").saveAsTable("log")
-
-# METADATA ********************
-
-# META {
-# META   "language": "python",
-# META   "language_group": "synapse_pyspark"
-# META }
-
-# CELL ********************
-
-spark.sql("insert into log values 'yes'")
-df2 = spark.sql("select * from log")
-display(df2)
 
 # METADATA ********************
 
