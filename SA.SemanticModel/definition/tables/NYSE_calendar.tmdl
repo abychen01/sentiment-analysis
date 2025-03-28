@@ -1,0 +1,120 @@
+table NYSE_calendar
+	lineageTag: c546f451-774b-4d79-904f-772b469baf8b
+	sourceLineageTag: [dbo].[NYSE_calendar]
+	dataCategory: Time
+
+	column date
+		dataType: dateTime
+		isKey
+		formatString: Short Date
+		sourceProviderType: date
+		lineageTag: e13f59b6-92ce-4f44-89ef-0759150bc65a
+		sourceLineageTag: date_value
+		summarizeBy: none
+		sourceColumn: date_value
+
+		changedProperty = FormatString
+
+		changedProperty = Name
+
+		changedProperty = DataType
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation UnderlyingDateTimeDataType = Date
+
+	column NYSE_holiday
+		dataType: string
+		sourceProviderType: bit
+		lineageTag: 4e226dcc-0b9f-4574-b637-8e6cb8fea7b7
+		sourceLineageTag: NYSE_holiday
+		summarizeBy: none
+		sourceColumn: NYSE_holiday
+
+		changedProperty = DataType
+
+		annotation SummarizationSetBy = Automatic
+
+	column Year
+		dataType: int64
+		formatString: 0
+		sourceProviderType: bigint
+		lineageTag: 45f4d9cd-b00b-4a85-b5cc-ec5c4f51899e
+		sourceLineageTag: Year
+		summarizeBy: none
+		sourceColumn: Year
+
+		changedProperty = SummarizeBy
+
+		annotation SummarizationSetBy = User
+
+	column Month
+		dataType: int64
+		formatString: 0
+		sourceProviderType: bigint
+		lineageTag: b3aa5065-947e-488f-bf1c-041e09ac3a22
+		sourceLineageTag: Month
+		summarizeBy: none
+		sourceColumn: Month
+
+		changedProperty = SummarizeBy
+
+		annotation SummarizationSetBy = User
+
+	column 'Month name'
+		dataType: string
+		sourceProviderType: varchar(8000)
+		lineageTag: 8c38eed9-af0e-419e-9b84-fd382081eecb
+		sourceLineageTag: Month name
+		summarizeBy: none
+		sourceColumn: Month name
+
+		annotation SummarizationSetBy = Automatic
+
+	column Day
+		dataType: int64
+		formatString: 0
+		sourceProviderType: bigint
+		lineageTag: 80948df9-dbcc-456d-a7c5-5c23189f7404
+		sourceLineageTag: Day
+		summarizeBy: none
+		sourceColumn: Day
+
+		changedProperty = SummarizeBy
+
+		annotation SummarizationSetBy = User
+
+	column 'Day name'
+		dataType: string
+		sourceProviderType: varchar(8000)
+		lineageTag: 7d49d35d-03bb-429c-81e4-ab6aa31a75a8
+		sourceLineageTag: Day name
+		summarizeBy: none
+		sourceColumn: Day name
+
+		annotation SummarizationSetBy = Automatic
+
+	hierarchy 'date Hierarchy'
+		lineageTag: dcd33226-cf26-4242-84ec-9eccc2cf51a3
+
+		level date
+			lineageTag: 41f4090c-a528-4e21-9671-7e658cdf2253
+			column: date
+
+		level Month
+			lineageTag: a81e374a-e976-4a85-8b70-d7b2bb5ac946
+			column: Month
+
+		level Year
+			lineageTag: 23e931b7-2ca1-4d1e-842c-43fb279c28e4
+			column: Year
+
+	partition NYSE_calendar = entity
+		mode: directLake
+		source
+			entityName: NYSE_calendar
+			schemaName: dbo
+			expressionSource: DatabaseQuery
+
+	annotation PBI_ResultType = Table
+

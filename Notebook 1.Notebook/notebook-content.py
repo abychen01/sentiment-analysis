@@ -113,8 +113,9 @@ df = spark.createDataFrame(comments_list, schema = schema)
 df = df.withColumn("time_utc", col("time_utc").cast("bigint"))
 df = df.withColumn("time_utc", from_unixtime(col("time_utc")).cast("timestamp"))\
     .withColumn("time_est",from_utc_timestamp(col("time_utc"), "America/New_York"))\
-    .withColumn("stock_name",regexp_extract(col("ticker"), r"\[([A-Za-z]+)", 1))\
     .withColumn("ticker_id",regexp_extract(col("ticker"), r"\$([A-Za-z]+)", 1))
+df = df.withColumn("time_est", when(hour("time_est") < 16,\
+    (date_sub("time_est",1)).cast("date")).otherwise((df.time_est).cast("date")))
 df = df.drop("ticker","actual_ticker")
 
 
@@ -138,9 +139,11 @@ pip install textblob
 
 # CELL ********************
 
-from pyspark.sql.functions import udf
+from pyspark.sql.functions import *
 from pyspark.sql.types import StringType
 from transformers import pipeline
+from transformers import AutoTokenizer, AutoModelForSequenceClassification
+import torch
 
 # Load pre-trained BERT sentiment model
 sentiment_pipeline = pipeline("sentiment-analysis", model="cardiffnlp/twitter-roberta-base-sentiment")
@@ -160,9 +163,38 @@ bert_sentiment_udf = udf(get_bert_sentiment, StringType())
 # Apply to DataFrame
 df3 = df.withColumn("sentiment_label", bert_sentiment_udf(df["post_title"]))
 
+# Load FinBERT model and tokenizer
+tokenizer = AutoTokenizer.from_pretrained("ProsusAI/finbert")
+model = AutoModelForSequenceClassification.from_pretrained("ProsusAI/finbert")
+
+# Define UDF for sentiment analysis
+def finbert_sentiment(text):
+    inputs = tokenizer(text, return_tensors="pt", truncation=True, max_length=512)
+    outputs = model(**inputs)
+    predictions = torch.argmax(outputs.logits, dim=-1)
+    return ["positive", "negative", "neutral"][predictions[0]]
+
+# Register UDF
+sentiment_udf = udf(finbert_sentiment, StringType())
+
+# Apply to DataFrame
+df3 = df3.withColumn("sentiment_label",\
+        when(df3.sentiment_label=="neutral", sentiment_udf(col("post_title")))\
+        .otherwise(df3.sentiment_label))
+
 # Show results
-display(df3.sort("time_utc"))
+#display(df3)
 df3.write.format("delta").mode("append").option("mergeSchema",True).saveAsTable("reddit_data")
+
+# METADATA ********************
+
+# META {
+# META   "language": "python",
+# META   "language_group": "synapse_pyspark"
+# META }
+
+# CELL ********************
+
 
 # METADATA ********************
 

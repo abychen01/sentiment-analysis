@@ -1,0 +1,186 @@
+table reddit_data
+	lineageTag: 59fe87ff-907d-492a-af59-c8f61e995ecf
+	sourceLineageTag: [dbo].[reddit_data]
+
+	measure 'Positive Count' = ```
+			
+			VAR Counts = 
+			    CALCULATE(
+			        COUNTROWS(reddit_data),  
+			       reddit_data[sentiment_label] = "positive"
+			    )
+			RETURN
+			IF(Counts = 0, 0, Counts) 
+			```
+		formatString: 0
+		lineageTag: 2705d973-a2b3-40ab-9c0b-a65e6d023922
+
+		changedProperty = Name
+
+		changedProperty = IsHidden
+
+	measure 'Negative Count' = ```
+			
+			VAR Counts = 
+			    CALCULATE(
+			        COUNTROWS(reddit_data),  
+			        FILTER(
+			            reddit_data,
+			            reddit_data[sentiment_label] = "negative"
+			        )
+			    )
+			RETURN
+			IF(Counts = 0, 0, Counts) 
+			```
+		formatString: 0
+		lineageTag: f34ff8bb-47db-458b-82d2-3c144bd29fb3
+
+		changedProperty = Name
+
+		changedProperty = IsHidden
+
+	measure 'Neutral Count' = ```
+			
+			VAR Counts = 
+			    CALCULATE(
+			        COUNTROWS(reddit_data),  
+			        FILTER(
+			            reddit_data,
+			            reddit_data[sentiment_label] = "neutral"
+			        )
+			    )
+			RETURN
+			IF(Counts = 0, 0, Counts) 
+			```
+		formatString: 0
+		lineageTag: 560e9893-7171-4003-9168-d064667c22f5
+
+		changedProperty = Name
+
+		changedProperty = IsHidden
+
+	measure 'Sentiment Score' = ```
+			
+			    IF(
+			        SELECTEDVALUE(NYSE_calendar[date]) <= TODAY(),
+			        IF(
+			            [Negative Count] && [Positive Count] == BLANK(),
+			            0,
+			            [Positive Count] - [Negative Count]
+			        ),
+			        BLANK()
+			    )
+			```
+		formatString: 0
+		lineageTag: bebd7a71-3fb5-4331-8f56-19a97e1d0ed4
+
+		changedProperty = Name
+
+		changedProperty = IsHidden
+
+	column post_title
+		dataType: string
+		sourceProviderType: varchar(8000)
+		lineageTag: 37bcd50c-10a3-4e49-86a7-b94734420e07
+		sourceLineageTag: post_title
+		summarizeBy: none
+		sourceColumn: post_title
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	column score
+		dataType: int64
+		formatString: 0
+		sourceProviderType: int
+		lineageTag: 0ce59463-c9dc-4a44-ae4b-5729b45678d3
+		sourceLineageTag: score
+		summarizeBy: none
+		sourceColumn: score
+
+		changedProperty = SummarizeBy
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = User
+
+	column time_utc
+		dataType: dateTime
+		formatString: General Date
+		sourceProviderType: datetime2
+		lineageTag: bdaf3777-4284-4ee5-8ab5-89a33c5bdf9d
+		sourceLineageTag: time_utc
+		summarizeBy: none
+		sourceColumn: time_utc
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	column subreddit_name
+		dataType: string
+		sourceProviderType: varchar(8000)
+		lineageTag: 969243e9-e47b-425a-bab4-99c9c533a2fe
+		sourceLineageTag: subreddit_name
+		summarizeBy: none
+		sourceColumn: subreddit_name
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	column ticker_id
+		dataType: string
+		sourceProviderType: varchar(8000)
+		lineageTag: ef09aaaa-bd75-4e79-9458-58e92e39552a
+		sourceLineageTag: ticker_id
+		summarizeBy: none
+		sourceColumn: ticker_id
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	column sentiment_label
+		dataType: string
+		sourceProviderType: varchar(8000)
+		lineageTag: 697ac8df-bd0d-489f-bde5-9bad58bf3131
+		sourceLineageTag: sentiment_label
+		summarizeBy: none
+		sourceColumn: sentiment_label
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	column time_est
+		dataType: dateTime
+		formatString: Short Date
+		sourceProviderType: date
+		lineageTag: 2595ab4d-6641-4f6b-b245-390effc8a193
+		sourceLineageTag: time_est
+		summarizeBy: none
+		sourceColumn: time_est
+
+		changedProperty = FormatString
+
+		changedProperty = DataType
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation UnderlyingDateTimeDataType = Date
+
+	partition reddit_data = entity
+		mode: directLake
+		source
+			entityName: reddit_data
+			schemaName: dbo
+			expressionSource: DatabaseQuery
+
+	changedProperty = IsHidden
+
+	annotation PBI_ResultType = Table
+

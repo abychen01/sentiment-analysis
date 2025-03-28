@@ -1,8 +1,0 @@
-expression DatabaseQuery = ```
-		let
-		    database = Sql.Database("ZHMK23IKGFTEVE2K3EFVTGNVWA-CHB3VQPYXWWUJED2NIXUGFCQRI.datawarehouse.fabric.microsoft.com", "b5992a81-df73-43a3-bc93-57a46b5c8c08")
-		in
-		    database
-		
-		```
-

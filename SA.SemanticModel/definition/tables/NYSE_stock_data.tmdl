@@ -1,0 +1,118 @@
+table NYSE_stock_data
+	lineageTag: 810caaf8-3224-479f-8e44-4b7f1eeffa5d
+	sourceLineageTag: [dbo].[NYSE_stock_data]
+
+	measure PrevTradingDayClose = ```
+			
+			VAR CurrentDate = MAX(NYSE_calendar[date])  // Get the current row's date
+			VAR IsHoliday = SELECTEDVALUE(NYSE_calendar[NYSE_holiday])  // Check if the current row is a holiday
+			VAR PrevTradingDay = 
+			    CALCULATE(
+			        MAX(NYSE_calendar[date]), 
+			        FILTER(
+			            ALLSELECTED(NYSE_calendar), 
+			            NYSE_calendar[Date] < CurrentDate && NYSE_calendar[NYSE_holiday] = "FALSE"
+			        )
+			    )  // Find the previous trading day
+			RETURN
+			    IF(
+			        IsHoliday = "TRUE",
+			        BLANK(),
+			        CALCULATE(
+			            [closing],
+			            NYSE_calendar[date] = PrevTradingDay
+			        )
+			    )
+			```
+		lineageTag: 31c62457-69bb-4c50-be8c-c77eee01c5a8
+
+		changedProperty = Name
+
+		changedProperty = FormatString
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	measure closing = AVERAGE(NYSE_stock_data[closing_price])
+		lineageTag: d7e7060a-5008-421e-9369-75842cd9e459
+
+		changedProperty = Name
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	measure Difference = SELECTEDVALUE(NYSE_stock_data[closing_price]) - [PrevTradingDayClose]
+		lineageTag: cf556d06-660e-4240-99d0-3b43ac2dca74
+
+		changedProperty = Name
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	measure Diff = ```
+			
+			    IF(
+			        [Difference] > 0,
+			        IF(
+			            [Difference] < 10,
+			            "Y",
+			            "YY"
+			        ),
+			        IF(
+			            [Difference] > -10 && [Difference] < 0,
+			            "N",
+			            "NN"
+			        )
+			    )
+			```
+		lineageTag: c7d18f77-f99e-4667-9355-3efa986b7150
+
+		changedProperty = Name
+
+	column trade_date
+		dataType: dateTime
+		formatString: Short Date
+		sourceProviderType: date
+		lineageTag: 3916738c-9136-42e0-84b3-38786e6268f3
+		sourceLineageTag: trade_date
+		summarizeBy: none
+		sourceColumn: trade_date
+
+		changedProperty = FormatString
+
+		changedProperty = DataType
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation UnderlyingDateTimeDataType = Date
+
+	column closing_price
+		dataType: double
+		sourceProviderType: float
+		lineageTag: 82a8e383-fac0-4862-bc22-9923324ad2b8
+		sourceLineageTag: closing_price
+		summarizeBy: none
+		sourceColumn: closing_price
+
+		changedProperty = SummarizeBy
+
+		annotation SummarizationSetBy = User
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	column ticker
+		dataType: string
+		sourceProviderType: varchar(8000)
+		lineageTag: a4908fd3-58ac-44f5-8441-6ea7928f9726
+		sourceLineageTag: ticker
+		summarizeBy: none
+		sourceColumn: ticker
+
+		annotation SummarizationSetBy = Automatic
+
+	partition NYSE_stock_data = entity
+		mode: directLake
+		source
+			entityName: NYSE_stock_data
+			schemaName: dbo
+			expressionSource: DatabaseQuery
+
+	annotation PBI_ResultType = Table
+

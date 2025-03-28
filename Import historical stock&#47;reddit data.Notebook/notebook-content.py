@@ -13,10 +13,10 @@
 # META       "default_lakehouse_workspace_id": "c1bac311-bdf8-44ad-907a-6a2f4314508a"
 # META     },
 # META     "warehouse": {
-# META       "default_warehouse": "b5992a81-df73-43a3-bc93-57a46b5c8c08",
+# META       "default_warehouse": "6b5c8c08-57a4-bc93-43a3-df73b5992a81",
 # META       "known_warehouses": [
 # META         {
-# META           "id": "b5992a81-df73-43a3-bc93-57a46b5c8c08",
+# META           "id": "6b5c8c08-57a4-bc93-43a3-df73b5992a81",
 # META           "type": "Datawarehouse"
 # META         }
 # META       ]
@@ -256,8 +256,81 @@ df3.write.mode("overwrite").option("mergeSchema",True).format("delta").saveAsTab
 
 # CELL ********************
 
+from pyspark.sql.functions import *
+from pyspark.sql.types import *
+
 df = spark.read.table("Reddit_Data.reddit_data")
+df = df.withColumn("time_est", when(hour("time_est") < 16,\
+    (date_sub("time_est",1)).cast("date"))   \
+    .otherwise(df.time_est).cast(DateType())).drop("stock_name")
+
+#display(df)
+df.write.mode("overwrite").option("overwriteSchema",True).format("delta").saveAsTable("reddit_data")
+
+
+
+# METADATA ********************
+
+# META {
+# META   "language": "python",
+# META   "language_group": "synapse_pyspark"
+# META }
+
+# CELL ********************
+
+df = spark.read.table("Reddit_Data.reddit_data")
+#display(df.where(df.sentiment_label == "neutral").count())
 display(df)
+
+# METADATA ********************
+
+# META {
+# META   "language": "python",
+# META   "language_group": "synapse_pyspark"
+# META }
+
+# CELL ********************
+
+from transformers import AutoTokenizer, AutoModelForSequenceClassification
+import torch
+from pyspark.sql.functions import *
+from pyspark.sql.types import StringType
+
+# Load FinBERT model and tokenizer
+tokenizer = AutoTokenizer.from_pretrained("ProsusAI/finbert")
+model = AutoModelForSequenceClassification.from_pretrained("ProsusAI/finbert")
+
+# Define UDF for sentiment analysis
+def finbert_sentiment(text):
+    inputs = tokenizer(text, return_tensors="pt", truncation=True, max_length=512)
+    outputs = model(**inputs)
+    predictions = torch.argmax(outputs.logits, dim=-1)
+    return ["positive", "negative", "neutral"][predictions[0]]
+
+# Register UDF
+sentiment_udf = udf(finbert_sentiment, StringType())
+
+df = spark.read.table("Reddit_Data.reddit_data")
+
+# Apply to DataFrame
+df = df.withColumn("sentiment_label",\
+        when(df.sentiment_label=="neutral", sentiment_udf(col("post_title")))\
+        .otherwise(df.sentiment_label))
+
+# Show results
+display(df.where(df.sentiment_label == "neutral").count())
+df.write.mode("overwrite").option("mergeSchema",True).format("delta").saveAsTable("reddit_data")
+
+# METADATA ********************
+
+# META {
+# META   "language": "python",
+# META   "language_group": "synapse_pyspark"
+# META }
+
+# CELL ********************
+
+display(df.sort(desc("time_utc")).limit(10))
 
 # METADATA ********************
 

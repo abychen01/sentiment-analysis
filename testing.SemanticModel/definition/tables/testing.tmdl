@@ -1,0 +1,129 @@
+table testing
+	lineageTag: 48dded26-5a60-438a-b844-9028dfd91cae
+	sourceLineageTag: [dbo].[testing]
+
+	measure PrevTradingDayClose = ```
+			
+			VAR CurrentDate = MAX(testing[date_value])  // Get the current row's date
+			VAR IsHoliday = SELECTEDVALUE(testing[NYSE_holiday])  // Get the value of NYSE_holiday for the current row
+			VAR PrevTradingDay = 
+			    CALCULATE(
+			        MAX(testing[date_value]), 
+			        FILTER(
+			            ALL(testing), 
+			            AVERAGE(testing[date_value]) < CurrentDate && testing[NYSE_holiday] = FALSE()
+			        )
+			    )  // Find the previous trading day
+			RETURN
+			
+			    PrevTradingDay
+			
+			    /*
+			       CALCULATE(
+			        MAX(testing[closing]),
+			        testing[date_value] = PrevTradingDay
+			    )
+			*/
+			```
+		formatString: Short Date
+		lineageTag: d1147a2e-efab-47e8-8c9c-6443bfb621f6
+
+		changedProperty = Name
+
+		changedProperty = FormatString
+
+	measure Prev = ```
+			
+			VAR CurrentDate = MAX(testing[date_value])  // Get the current row's date
+			VAR IsHoliday = SELECTEDVALUE(testing[NYSE_holiday])  // Get the value of NYSE_holiday for the current row
+			VAR PrevTradingDay = 
+			    CALCULATE(
+			        MAX(testing[date_value]), 
+			        FILTER(
+			            ALLSELECTED(testing), 
+			            testing[date_value] < CurrentDate && testing[NYSE_holiday] = FALSE()
+			        )
+			    )  // Find the previous trading day
+			RETURN
+			    CALCULATE(
+			        sum(testing[closing]),
+			        testing[date_value]= PrevTradingDay
+			    )
+			
+			```
+		formatString: 0
+		lineageTag: ccb73c6d-6d66-46b6-b34d-42f1df9beb46
+
+		changedProperty = Name
+
+	column date
+		dataType: dateTime
+		formatString: General Date
+		sourceProviderType: date
+		lineageTag: 33d02456-9ce4-422d-aadc-c63036e59d1a
+		sourceLineageTag: date
+		summarizeBy: none
+		sourceColumn: date
+
+		annotation SummarizationSetBy = Automatic
+
+	column stock_value
+		dataType: double
+		sourceProviderType: float
+		lineageTag: 9cd0b7f8-aabc-4944-86a5-87d05cfc53bf
+		sourceLineageTag: stock_value
+		summarizeBy: sum
+		sourceColumn: stock_value
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	column date_value
+		dataType: dateTime
+		formatString: Short Date
+		sourceProviderType: date
+		lineageTag: 2bca78d3-11fe-4ad4-9dff-5097c48be508
+		sourceLineageTag: date_value
+		summarizeBy: none
+		sourceColumn: date_value
+
+		changedProperty = DataType
+
+		changedProperty = FormatString
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation UnderlyingDateTimeDataType = Date
+
+	column NYSE_holiday
+		dataType: boolean
+		formatString: """TRUE"";""TRUE"";""FALSE"""
+		sourceProviderType: bit
+		lineageTag: 832cd398-e9e2-44c3-b9f8-abb28f19393b
+		sourceLineageTag: NYSE_holiday
+		summarizeBy: none
+		sourceColumn: NYSE_holiday
+
+		annotation SummarizationSetBy = Automatic
+
+	column closing
+		dataType: int64
+		formatString: 0
+		sourceProviderType: int
+		lineageTag: 18abea56-056e-40a6-8bbd-e94077b3386b
+		sourceLineageTag: closing
+		summarizeBy: sum
+		sourceColumn: closing
+
+		annotation SummarizationSetBy = Automatic
+
+	partition testing = entity
+		mode: directLake
+		source
+			entityName: testing
+			schemaName: dbo
+			expressionSource: DatabaseQuery
+
+	annotation PBI_ResultType = Table
+

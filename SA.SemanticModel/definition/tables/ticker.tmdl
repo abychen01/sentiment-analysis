@@ -1,0 +1,23 @@
+table ticker
+	lineageTag: 85b50149-54aa-4122-93fd-10507f472a46
+	sourceLineageTag: [dbo].[ticker]
+
+	column ticker
+		dataType: string
+		sourceProviderType: varchar(8000)
+		lineageTag: 2fc97e5e-8f57-414e-b038-373396d98e02
+		sourceLineageTag: ticker
+		summarizeBy: none
+		sourceColumn: ticker
+
+		annotation SummarizationSetBy = Automatic
+
+	partition ticker = entity
+		mode: directLake
+		source
+			entityName: ticker
+			schemaName: dbo
+			expressionSource: DatabaseQuery
+
+	annotation PBI_ResultType = Table
+

@@ -1,0 +1,51 @@
+{
+  "config": "{\"version\":\"5.59\",\"themeCollection\":{\"baseTheme\":{\"name\":\"CY24SU10\",\"version\":\"5.62\",\"type\":2}},\"activeSectionIndex\":0,\"defaultDrillFilterOtherVisuals\":true,\"linguisticSchemaSyncVersion\":0,\"settings\":{\"useNewFilterPaneExperience\":true,\"allowChangeFilterTypes\":true,\"useStylableVisualContainerHeader\":true,\"queryLimitOption\":6,\"useEnhancedTooltips\":true,\"exportDataMode\":1,\"useDefaultAggregateDisplayName\":true},\"objects\":{\"section\":[{\"properties\":{\"verticalAlignment\":{\"expr\":{\"Literal\":{\"Value\":\"'Top'\"}}}}}],\"outspacePane\":[{\"properties\":{\"expanded\":{\"expr\":{\"Literal\":{\"Value\":\"false\"}}}}}]}}",
+  "layoutOptimization": 0,
+  "resourcePackages": [
+    {
+      "resourcePackage": {
+        "disabled": false,
+        "items": [
+          {
+            "name": "CY24SU10",
+            "path": "BaseThemes/CY24SU10.json",
+            "type": 202
+          }
+        ],
+        "name": "SharedResources",
+        "type": 2
+      }
+    }
+  ],
+  "sections": [
+    {
+      "config": "{\"objects\":{\"background\":[{\"properties\":{\"color\":{\"solid\":{\"color\":{\"expr\":{\"ThemeDataColor\":{\"ColorId\":0,\"Percent\":-0.3}}}}},\"transparency\":{\"expr\":{\"Literal\":{\"Value\":\"0D\"}}}}}]}}",
+      "displayName": "Page 1",
+      "displayOption": 3,
+      "filters": "[]",
+      "height": 720.00,
+      "name": "666508ce9904e08dcd4d",
+      "visualContainers": [
+        {
+          "config": "{\"name\":\"461653ef3b70c92946c3\",\"layouts\":[{\"id\":0,\"position\":{\"x\":261.1111111111111,\"y\":176.66666666666666,\"z\":1000,\"width\":684.4444444444445,\"height\":265.55555555555554,\"tabOrder\":1000}}],\"singleVisual\":{\"visualType\":\"tableEx\",\"projections\":{\"Values\":[{\"queryRef\":\"NYSE_calendar.date\"},{\"queryRef\":\"ticker.ticker\"},{\"queryRef\":\"NYSE_calendar.NYSE_holiday\"},{\"queryRef\":\"reddit_data.Sentiment Score\"},{\"queryRef\":\"NYSE_stock_data.closing\"},{\"queryRef\":\"NYSE_stock_data.PrevTradingDayClose\"}]},\"prototypeQuery\":{\"Version\":2,\"From\":[{\"Name\":\"t\",\"Entity\":\"ticker\",\"Type\":0},{\"Name\":\"n1\",\"Entity\":\"NYSE_calendar\",\"Type\":0},{\"Name\":\"r\",\"Entity\":\"reddit_data\",\"Type\":0},{\"Name\":\"n\",\"Entity\":\"NYSE_stock_data\",\"Type\":0}],\"Select\":[{\"Column\":{\"Expression\":{\"SourceRef\":{\"Source\":\"t\"}},\"Property\":\"ticker\"},\"Name\":\"ticker.ticker\",\"NativeReferenceName\":\"ticker\"},{\"Column\":{\"Expression\":{\"SourceRef\":{\"Source\":\"n1\"}},\"Property\":\"date\"},\"Name\":\"NYSE_calendar.date\",\"NativeReferenceName\":\"date\"},{\"Column\":{\"Expression\":{\"SourceRef\":{\"Source\":\"n1\"}},\"Property\":\"NYSE_holiday\"},\"Name\":\"NYSE_calendar.NYSE_holiday\",\"NativeReferenceName\":\"NYSE_holiday\"},{\"Measure\":{\"Expression\":{\"SourceRef\":{\"Source\":\"r\"}},\"Property\":\"Sentiment Score\"},\"Name\":\"reddit_data.Sentiment Score\",\"NativeReferenceName\":\"Sentiment Score\"},{\"Measure\":{\"Expression\":{\"SourceRef\":{\"Source\":\"n\"}},\"Property\":\"closing\"},\"Name\":\"NYSE_stock_data.closing\",\"NativeReferenceName\":\"closing\"},{\"Measure\":{\"Expression\":{\"SourceRef\":{\"Source\":\"n\"}},\"Property\":\"PrevTradingDayClose\"},\"Name\":\"NYSE_stock_data.PrevTradingDayClose\",\"NativeReferenceName\":\"PrevTradingDayClose\"}],\"OrderBy\":[{\"Direction\":2,\"Expression\":{\"Column\":{\"Expression\":{\"SourceRef\":{\"Source\":\"n1\"}},\"Property\":\"date\"}}}]},\"drillFilterOtherVisuals\":true,\"objects\":{\"columnWidth\":[{\"properties\":{\"value\":{\"expr\":{\"Literal\":{\"Value\":\"145.33333851378677D\"}}}},\"selector\":{\"metadata\":\"NYSE_calendar.date\"}}],\"values\":[{\"properties\":{\"fontSize\":{\"expr\":{\"Literal\":{\"Value\":\"15D\"}}}}}]}}}",
+          "filters": "[{\"name\":\"d17dc05300832289a9dd\",\"expression\":{\"Column\":{\"Expression\":{\"SourceRef\":{\"Entity\":\"ticker\"}},\"Property\":\"ticker\"}},\"filter\":{\"Version\":2,\"From\":[{\"Name\":\"t\",\"Entity\":\"ticker\",\"Type\":0}],\"Where\":[{\"Condition\":{\"In\":{\"Expressions\":[{\"Column\":{\"Expression\":{\"SourceRef\":{\"Source\":\"t\"}},\"Property\":\"ticker\"}}],\"Values\":[[{\"Literal\":{\"Value\":\"'TSLA'\"}}]]}}}]},\"type\":\"Categorical\",\"howCreated\":0,\"objects\":{},\"isHiddenInViewMode\":false},{\"expression\":{\"Column\":{\"Expression\":{\"SourceRef\":{\"Entity\":\"NYSE_calendar\"}},\"Property\":\"date\"}},\"filter\":{\"Version\":2,\"From\":[{\"Name\":\"n1\",\"Entity\":\"NYSE_calendar\",\"Type\":0}],\"Where\":[{\"Condition\":{\"And\":{\"Left\":{\"Comparison\":{\"ComparisonKind\":1,\"Left\":{\"Column\":{\"Expression\":{\"SourceRef\":{\"Source\":\"n1\"}},\"Property\":\"date\"}},\"Right\":{\"DateSpan\":{\"Expression\":{\"Literal\":{\"Value\":\"datetime'2025-01-01T00:00:00'\"}},\"TimeUnit\":5}}}},\"Right\":{\"Comparison\":{\"ComparisonKind\":3,\"Left\":{\"Column\":{\"Expression\":{\"SourceRef\":{\"Source\":\"n1\"}},\"Property\":\"date\"}},\"Right\":{\"DateSpan\":{\"Expression\":{\"Literal\":{\"Value\":\"datetime'2025-03-18T00:00:00'\"}},\"TimeUnit\":5}}}}}}}]},\"type\":\"Advanced\",\"howCreated\":0,\"isHiddenInViewMode\":false}]",
+          "height": 265.56,
+          "width": 684.44,
+          "x": 261.11,
+          "y": 176.67,
+          "z": 1000.00
+        },
+        {
+          "config": "{\"name\":\"49c8c9154d0e879d9bc3\",\"layouts\":[{\"id\":0,\"position\":{\"x\":595.5555555555555,\"y\":18.88888888888889,\"z\":0,\"width\":608.8888888888889,\"height\":317.77777777777777,\"tabOrder\":0}}],\"singleVisual\":{\"visualType\":\"tableEx\",\"projections\":{\"Values\":[{\"queryRef\":\"reddit_data.ticker_id\"},{\"queryRef\":\"NYSE_calendar.date\"},{\"queryRef\":\"reddit_data.Negative Count\"},{\"queryRef\":\"reddit_data.Neutral Count\"},{\"queryRef\":\"reddit_data.Positive Count\"},{\"queryRef\":\"reddit_data.Sentiment Score\"},{\"queryRef\":\"NYSE_stock_data.closing\"}]},\"prototypeQuery\":{\"Version\":2,\"From\":[{\"Name\":\"r\",\"Entity\":\"reddit_data\",\"Type\":0},{\"Name\":\"n\",\"Entity\":\"NYSE_calendar\",\"Type\":0},{\"Name\":\"n1\",\"Entity\":\"NYSE_stock_data\",\"Type\":0}],\"Select\":[{\"Column\":{\"Expression\":{\"SourceRef\":{\"Source\":\"r\"}},\"Property\":\"ticker_id\"},\"Name\":\"reddit_data.ticker_id\",\"NativeReferenceName\":\"ticker_id\"},{\"Column\":{\"Expression\":{\"SourceRef\":{\"Source\":\"n\"}},\"Property\":\"date\"},\"Name\":\"NYSE_calendar.date\",\"NativeReferenceName\":\"date\"},{\"Measure\":{\"Expression\":{\"SourceRef\":{\"Source\":\"r\"}},\"Property\":\"Negative Count\"},\"Name\":\"reddit_data.Negative Count\",\"NativeReferenceName\":\"Negative Count\"},{\"Measure\":{\"Expression\":{\"SourceRef\":{\"Source\":\"r\"}},\"Property\":\"Neutral Count\"},\"Name\":\"reddit_data.Neutral Count\",\"NativeReferenceName\":\"Neutral Count\"},{\"Measure\":{\"Expression\":{\"SourceRef\":{\"Source\":\"r\"}},\"Property\":\"Positive Count\"},\"Name\":\"reddit_data.Positive Count\",\"NativeReferenceName\":\"Positive Count\"},{\"Measure\":{\"Expression\":{\"SourceRef\":{\"Source\":\"r\"}},\"Property\":\"Sentiment Score\"},\"Name\":\"reddit_data.Sentiment Score\",\"NativeReferenceName\":\"Sentiment Score\"},{\"Measure\":{\"Expression\":{\"SourceRef\":{\"Source\":\"n1\"}},\"Property\":\"closing\"},\"Name\":\"NYSE_stock_data.closing\",\"NativeReferenceName\":\"closing\"}],\"OrderBy\":[{\"Direction\":2,\"Expression\":{\"Column\":{\"Expression\":{\"SourceRef\":{\"Source\":\"n\"}},\"Property\":\"date\"}}}]},\"drillFilterOtherVisuals\":true,\"objects\":{\"columnWidth\":[{\"properties\":{\"value\":{\"expr\":{\"Literal\":{\"Value\":\"64.11111623212318D\"}}}},\"selector\":{\"metadata\":\"reddit_data.Negative Count\"}}]}}}",
+          "filters": "[{\"name\":\"718dcb2190035da22ed5\",\"expression\":{\"Column\":{\"Expression\":{\"SourceRef\":{\"Entity\":\"reddit_data\"}},\"Property\":\"ticker_id\"}},\"filter\":{\"Version\":2,\"From\":[{\"Name\":\"r\",\"Entity\":\"reddit_data\",\"Type\":0}],\"Where\":[{\"Condition\":{\"In\":{\"Expressions\":[{\"Column\":{\"Expression\":{\"SourceRef\":{\"Source\":\"r\"}},\"Property\":\"ticker_id\"}}],\"Values\":[[{\"Literal\":{\"Value\":\"'TSLA'\"}}]]}}}]},\"type\":\"Categorical\",\"howCreated\":0,\"objects\":{},\"isHiddenInViewMode\":false},{\"expression\":{\"Column\":{\"Expression\":{\"SourceRef\":{\"Entity\":\"NYSE_calendar\"}},\"Property\":\"date\"}},\"filter\":{\"Version\":2,\"From\":[{\"Name\":\"n\",\"Entity\":\"NYSE_calendar\",\"Type\":0}],\"Where\":[{\"Condition\":{\"And\":{\"Left\":{\"Comparison\":{\"ComparisonKind\":1,\"Left\":{\"Column\":{\"Expression\":{\"SourceRef\":{\"Source\":\"n\"}},\"Property\":\"date\"}},\"Right\":{\"DateSpan\":{\"Expression\":{\"Literal\":{\"Value\":\"datetime'2025-01-01T00:00:00'\"}},\"TimeUnit\":5}}}},\"Right\":{\"Comparison\":{\"ComparisonKind\":3,\"Left\":{\"Column\":{\"Expression\":{\"SourceRef\":{\"Source\":\"n\"}},\"Property\":\"date\"}},\"Right\":{\"DateSpan\":{\"Expression\":{\"Literal\":{\"Value\":\"datetime'2025-03-17T00:00:00'\"}},\"TimeUnit\":5}}}}}}}]},\"type\":\"Advanced\",\"howCreated\":0,\"isHiddenInViewMode\":false}]",
+          "height": 317.78,
+          "width": 608.89,
+          "x": 595.56,
+          "y": 18.89,
+          "z": 0.00
+        }
+      ],
+      "width": 1280.00
+    }
+  ]
+}

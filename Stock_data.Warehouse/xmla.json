@@ -20,10 +20,15 @@
             "name": "date_value",
             "dataType": "dateTime",
             "sourceColumn": "date_value",
-            "formatString": "General Date",
+            "formatString": "Short Date",
             "sourceProviderType": "date",
             "sourceLineageTag": "date_value",
             "summarizeBy": "none",
+            "changedProperties": [
+              {
+                "property": "FormatString"
+              }
+            ],
             "annotations": [
               {
                 "name": "SummarizationSetBy",
@@ -53,7 +58,7 @@
             "formatString": "0",
             "sourceProviderType": "bigint",
             "sourceLineageTag": "Year",
-            "summarizeBy": "sum",
+            "summarizeBy": "none",
             "annotations": [
               {
                 "name": "SummarizationSetBy",
@@ -68,7 +73,7 @@
             "formatString": "0",
             "sourceProviderType": "bigint",
             "sourceLineageTag": "Month",
-            "summarizeBy": "sum",
+            "summarizeBy": "none",
             "annotations": [
               {
                 "name": "SummarizationSetBy",
@@ -97,7 +102,7 @@
             "formatString": "0",
             "sourceProviderType": "bigint",
             "sourceLineageTag": "Day",
-            "summarizeBy": "sum",
+            "summarizeBy": "none",
             "annotations": [
               {
                 "name": "SummarizationSetBy",
@@ -147,10 +152,15 @@
             "name": "trade_date",
             "dataType": "dateTime",
             "sourceColumn": "trade_date",
-            "formatString": "General Date",
+            "formatString": "Short Date",
             "sourceProviderType": "date",
             "sourceLineageTag": "trade_date",
             "summarizeBy": "none",
+            "changedProperties": [
+              {
+                "property": "FormatString"
+              }
+            ],
             "annotations": [
               {
                 "name": "SummarizationSetBy",
@@ -164,11 +174,16 @@
             "sourceColumn": "closing_price",
             "sourceProviderType": "float",
             "sourceLineageTag": "closing_price",
-            "summarizeBy": "sum",
+            "summarizeBy": "none",
+            "changedProperties": [
+              {
+                "property": "SummarizeBy"
+              }
+            ],
             "annotations": [
               {
                 "name": "SummarizationSetBy",
-                "value": "Automatic"
+                "value": "User"
               },
               {
                 "name": "PBI_FormatHint",
@@ -206,9 +221,63 @@
         "annotations": [
           {
             "name": "IsTableInBiModel",
-            "value": "False"
+            "value": "True"
           }
         ]
+      },
+      {
+        "name": "ticker",
+        "sourceLineageTag": "[dbo].[ticker]",
+        "columns": [
+          {
+            "name": "ticker",
+            "dataType": "string",
+            "sourceColumn": "ticker",
+            "sourceProviderType": "varchar",
+            "sourceLineageTag": "ticker",
+            "summarizeBy": "none",
+            "annotations": [
+              {
+                "name": "SummarizationSetBy",
+                "value": "Automatic"
+              }
+            ]
+          }
+        ],
+        "partitions": [
+          {
+            "name": "{{Partition_Name}}",
+            "mode": "directLake",
+            "source": {
+              "type": "entity",
+              "entityName": "ticker",
+              "expressionSource": "DatabaseQuery",
+              "schemaName": "dbo"
+            }
+          }
+        ],
+        "annotations": [
+          {
+            "name": "IsTableInBiModel",
+            "value": "True"
+          }
+        ]
+      }
+    ],
+    "relationships": [
+      {
+        "name": "3c8d2f1c598d44603c7bab44089443e7",
+        "fromTable": "NYSE_stock_data",
+        "fromColumn": "trade_date",
+        "toTable": "NYSE_calendar",
+        "toColumn": "date_value"
+      },
+      {
+        "name": "c1b7b3dad480fc36304a8c0b124f9878",
+        "fromTable": "NYSE_stock_data",
+        "fromColumn": "ticker",
+        "toTable": "ticker",
+        "toColumn": "ticker"
       }
     ],
     "expressions": [
