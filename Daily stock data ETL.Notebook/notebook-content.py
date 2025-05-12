@@ -13,10 +13,10 @@
 # META       "default_lakehouse_workspace_id": "c1bac311-bdf8-44ad-907a-6a2f4314508a"
 # META     },
 # META     "warehouse": {
-# META       "default_warehouse": "b5992a81-df73-43a3-bc93-57a46b5c8c08",
+# META       "default_warehouse": "6b5c8c08-57a4-bc93-43a3-df73b5992a81",
 # META       "known_warehouses": [
 # META         {
-# META           "id": "b5992a81-df73-43a3-bc93-57a46b5c8c08",
+# META           "id": "6b5c8c08-57a4-bc93-43a3-df73b5992a81",
 # META           "type": "Datawarehouse"
 # META         }
 # META       ]
@@ -26,6 +26,7 @@
 
 # CELL ********************
 
+# Install Yahoo Finance client
 pip install yfinance
 
 # METADATA ********************
@@ -75,16 +76,6 @@ for ticker in tickers:
 final_spark_df = reduce(DataFrame.union, all_stock_data)
 final_spark_df = final_spark_df.withColumn("Date",final_spark_df.Date.cast(DateType()))
 final_spark_df.write.mode("overwrite").format("delta").saveAsTable("temp_stock_data")
-
-
-# METADATA ********************
-
-# META {
-# META   "language": "python",
-# META   "language_group": "synapse_pyspark"
-# META }
-
-# CELL ********************
 
 
 # METADATA ********************

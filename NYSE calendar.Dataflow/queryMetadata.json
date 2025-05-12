@@ -1,81 +1,28 @@
 {
-  "formatVersion": "202409",
-  "lastModified": null,
-  "editingSession": {
-    "computeEngineSettings": {},
-    "editingSessionMashup": {
-      "mashupName": "Date table",
-      "queryGroups": [],
-      "documentLocale": "en-US",
-      "queriesMetadata": {
-        "nyse_calendar": {
-          "queryId": "a9aa9647-d4d7-4f43-a223-91e648b74522",
-          "queryName": "nyse_calendar",
-          "queryGroupId": null,
-          "entityName": null,
-          "lastKnownIsCalculatedEntity": null,
-          "lastKnownIsLinkedEntity": null,
-          "lastKnownIsParameter": null,
-          "isHidden": false,
-          "lastKnownResultTypeName": null,
-          "loadEnabled": true,
-          "fieldsMetadata": {},
-          "deleteExistingDataOnLoad": false,
-          "hostProperties": {},
-          "jsonOutputDestinations": null,
-          "bindToDefaultOutputDestination": null,
-          "jsonIncrementalRefreshSettings": null
-        },
-        "nyse_calendar_DataDestination": {
-          "queryId": "95e1b858-9d2d-483f-bf67-f089954a8a97",
-          "queryName": "nyse_calendar_DataDestination",
-          "queryGroupId": null,
-          "entityName": null,
-          "lastKnownIsCalculatedEntity": null,
-          "lastKnownIsLinkedEntity": null,
-          "lastKnownIsParameter": null,
-          "isHidden": true,
-          "lastKnownResultTypeName": null,
-          "loadEnabled": false,
-          "fieldsMetadata": {},
-          "deleteExistingDataOnLoad": false,
-          "hostProperties": {},
-          "jsonOutputDestinations": null,
-          "bindToDefaultOutputDestination": null,
-          "jsonIncrementalRefreshSettings": null
-        }
-      },
-      "connectionOverrides": [
-        {
-          "path": "Warehouse",
-          "kind": "Warehouse",
-          "provider": "DmtsFabric",
-          "connectionName": "{\"ClusterId\":\"fd9450ed-e905-4202-a7a7-8b6159a3f846\",\"DatasourceId\":\"9c37fa27-4136-44e9-82af-69e8ccd41784\"}",
-          "credentialDetails": {},
-          "connectionParameters": {},
-          "privacyGroup": "None"
-        }
-      ],
-      "trustedConnections": [
-        {
-          "path": "Warehouse",
-          "kind": "Warehouse",
-          "provider": "DmtsFabric",
-          "connectionName": "{\"ClusterId\":\"fd9450ed-e905-4202-a7a7-8b6159a3f846\",\"DatasourceId\":\"9c37fa27-4136-44e9-82af-69e8ccd41784\"}",
-          "credentialDetails": {},
-          "connectionParameters": {},
-          "privacyGroup": "None"
-        }
-      ],
-      "useHostConnectionProvider": false,
-      "fastCombine": false,
-      "allowNativeQueries": true,
-      "skipAutomaticTypeAndHeaderDetection": false,
-      "hostProperties": {
-        "dataflowRefreshOutputFileFormat": "Parquet",
-        "enableDateTimeFieldsForStaging": "true",
-        "enablePublishWithoutLoadedQueries": "true"
-      }
+  "formatVersion": "202502",
+  "computeEngineSettings": {
+    "allowFastCopy": false
+  },
+  "name": "Date table",
+  "queryGroups": [],
+  "documentLocale": "en-US",
+  "queriesMetadata": {
+    "nyse_calendar": {
+      "queryId": "a9aa9647-d4d7-4f43-a223-91e648b74522",
+      "queryName": "nyse_calendar"
+    },
+    "nyse_calendar_DataDestination": {
+      "queryId": "95e1b858-9d2d-483f-bf67-f089954a8a97",
+      "queryName": "nyse_calendar_DataDestination",
+      "isHidden": true,
+      "loadEnabled": false
     }
-  }
+  },
+  "connections": [
+    {
+      "path": "Warehouse",
+      "kind": "Warehouse",
+      "connectionId": "{\"ClusterId\":\"fd9450ed-e905-4202-a7a7-8b6159a3f846\",\"DatasourceId\":\"9c37fa27-4136-44e9-82af-69e8ccd41784\"}"
+    }
+  ]
 }

@@ -22,6 +22,8 @@
 
 # CELL ********************
 
+# Install dependencies
+
 pip install praw textblob pyspark
 
 
@@ -34,22 +36,21 @@ pip install praw textblob pyspark
 
 # CELL ********************
 
-# testing........
-
 
 import praw
 from pyspark.sql.functions import *
 from pyspark.sql.types import *
 from textblob import TextBlob
 
-# Reddit API Authentication
+# Reddit API Authentication using PRAW
+
 reddit = praw.Reddit(
     client_id="JG7mziWmSjbcnXH39GCNCQ",
     client_secret="DQyO06RmOXlFefp6wiFV6woh9nIyJQ",
     user_agent="redcap"
 )
 
-# Fetch Comments from a Subreddit
+#  Define subreddit and ticker lists
 comments_list = []
 query = "TESLA OR $TSLA OR tesla OR $tsla"
 query1 = [
@@ -67,7 +68,7 @@ query1 = [
 
 data = [(["wallstreetbets", "CanadianInvestor", "Daytrading", "StockMarket", "Stocks","investing"],)]
 
-# ✅ Define Schema
+# Define Schema
 schema = StructType([
     StructField("names", ArrayType(StringType()), True)  # Only an array column
 ])
@@ -77,18 +78,20 @@ schema1 = StructType([
 ])
 
 
-# ✅ Create DataFrame
+# Create DataFrame
 df = spark.createDataFrame(data, schema=schema)
 df2 = spark.createDataFrame(query1, schema=schema1)
 
 name_list = df.select("names").collect()[0]["names"]  # Extract the array
 ticker_list =df2.collect()
 
+# Collect posts created since last ingestion timestamp
 dff = spark.read.table("reddit_data")
 dff = dff.select(dff.time_utc).orderBy(desc(dff.time_utc)).limit(1)
 dff = (dff.withColumn("time_utc",unix_timestamp(dff.time_utc)))
 max_timestamp = dff.select("time_utc").collect()[0][0]
 
+# searching the reddit posts for posts related to the stock tickers
 x = 0
 y = 0
 for y in range(10):
@@ -100,6 +103,7 @@ for y in range(10):
                 comments_list.append((subreddit_name, submission.title, submission.score,\
                 submission.created_utc,ticker_list[y]["ticker"]))
 
+# creating schema for extracted data
 schema = StructType([
     StructField("subreddit_name", StringType(), True),
     StructField("post_title", StringType(), True),
@@ -109,6 +113,9 @@ schema = StructType([
 
 ])
 df = spark.createDataFrame(comments_list, schema = schema)
+
+# Convert UNIX seconds to timestamp, then to America/New_York timezone
+# Adjust ET date: if before 4pm ET, count as previous trading day
 
 df = df.withColumn("time_utc", col("time_utc").cast("bigint"))
 df = df.withColumn("time_utc", from_unixtime(col("time_utc")).cast("timestamp"))\
@@ -138,6 +145,8 @@ pip install textblob
 # META }
 
 # CELL ********************
+
+# Sentiment Analysis UDFs (RoBERTa + FinBERT)
 
 from pyspark.sql.functions import *
 from pyspark.sql.types import StringType
@@ -185,26 +194,6 @@ df3 = df3.withColumn("sentiment_label",\
 # Show results
 #display(df3)
 df3.write.format("delta").mode("append").option("mergeSchema",True).saveAsTable("reddit_data")
-
-# METADATA ********************
-
-# META {
-# META   "language": "python",
-# META   "language_group": "synapse_pyspark"
-# META }
-
-# CELL ********************
-
-
-# METADATA ********************
-
-# META {
-# META   "language": "python",
-# META   "language_group": "synapse_pyspark"
-# META }
-
-# CELL ********************
-
 
 # METADATA ********************
 
