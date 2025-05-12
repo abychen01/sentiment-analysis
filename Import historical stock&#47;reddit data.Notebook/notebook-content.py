@@ -278,19 +278,6 @@ df.write.mode("overwrite").option("overwriteSchema",True).format("delta").saveAs
 
 # CELL ********************
 
-df = spark.read.table("Reddit_Data.reddit_data")
-#display(df.where(df.sentiment_label == "neutral").count())
-display(df)
-
-# METADATA ********************
-
-# META {
-# META   "language": "python",
-# META   "language_group": "synapse_pyspark"
-# META }
-
-# CELL ********************
-
 from transformers import AutoTokenizer, AutoModelForSequenceClassification
 import torch
 from pyspark.sql.functions import *
@@ -320,17 +307,6 @@ df = df.withColumn("sentiment_label",\
 # Show results
 display(df.where(df.sentiment_label == "neutral").count())
 df.write.mode("overwrite").option("mergeSchema",True).format("delta").saveAsTable("reddit_data")
-
-# METADATA ********************
-
-# META {
-# META   "language": "python",
-# META   "language_group": "synapse_pyspark"
-# META }
-
-# CELL ********************
-
-display(df.sort(desc("time_utc")).limit(10))
 
 # METADATA ********************
 
