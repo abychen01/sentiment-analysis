@@ -8,11 +8,12 @@
 # META   },
 # META   "dependencies": {
 # META     "lakehouse": {
-# META       "default_lakehouse_name": "",
-# META       "default_lakehouse_workspace_id": "",
+# META       "default_lakehouse": "f8400f71-0acf-4158-b761-0b86bf4c9f15",
+# META       "default_lakehouse_name": "Reddit__Data",
+# META       "default_lakehouse_workspace_id": "81da3283-2446-4563-9f8c-168297009931",
 # META       "known_lakehouses": [
 # META         {
-# META           "id": "b2f28c43-5191-41e3-a5cd-40721f8bf8e0"
+# META           "id": "f8400f71-0acf-4158-b761-0b86bf4c9f15"
 # META         }
 # META       ]
 # META     }
@@ -32,6 +33,21 @@ pip install praw textblob
 
 # CELL ********************
 
+df2 = spark.read.parquet("Files/creds")
+reddit_id = df.collect()[0]['reddit_id']
+reddit_secret = df.collect()[0]['reddit_secret']
+reddit_user_agent = df.collect()[0]['reddit_user_agent']
+
+
+# METADATA ********************
+
+# META {
+# META   "language": "python",
+# META   "language_group": "synapse_pyspark"
+# META }
+
+# CELL ********************
+
 
 import praw
 from pyspark.sql.functions import *
@@ -41,9 +57,9 @@ from textblob import TextBlob
 # Reddit API Authentication using PRAW
 
 reddit = praw.Reddit(
-    client_id="JG7mziWmSjbcnXH39GCNCQ",
-    client_secret="DQyO06RmOXlFefp6wiFV6woh9nIyJQ",
-    user_agent="redcap"
+    client_id=reddit_id,
+    client_secret=reddit_secret,
+    user_agent=reddit_user_agent
 )
 
 #  Define subreddit and ticker lists
@@ -91,7 +107,7 @@ for y in range(10):
     for name in name_list:
         subreddit_name = name  
         for submission in reddit.subreddit(subreddit_name).\
-            search(ticker_list[y]["ticker"], sort = "top", limit=1000):
+            search(ticker_list[y]["ticker"], sort = "top", limit=4000):
             if submission.created_utc > 1640995200:  
                 comments_list.append((subreddit_name, submission.title, submission.score,\
                 submission.created_utc,ticker_list[y]["ticker"]))
