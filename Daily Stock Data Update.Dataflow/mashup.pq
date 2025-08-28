@@ -3,8 +3,8 @@ section Section1;
 [DataDestinations = {[Definition = [Kind = "Reference", QueryName = "temp_stock_data_DataDestination", IsNewTarget = false], Settings = [Kind = "Manual", AllowCreation = false, ColumnSettings = [Mappings = {[SourceColumnName = "Date", DestinationColumnName = "Date"], [SourceColumnName = "Close", DestinationColumnName = "Close"], [SourceColumnName = "ticker", DestinationColumnName = "ticker"]}], DynamicSchema = false, UpdateMethod = [Kind = "Append"], TypeSettings = [Kind = "Table"]]]}]
 shared temp_stock_data = let
   Source = Lakehouse.Contents(null),
-  Navigation = Source{[workspaceId = "1682a0d7-4d6c-47fd-88f0-3cb543c163d6"]}[Data],
-  #"Navigation 1" = Navigation{[lakehouseId = "b3b54ba2-cc81-4a95-b001-84731590108e"]}[Data],
+  Navigation = Source{[workspaceId = "81da3283-2446-4563-9f8c-168297009931"]}[Data],
+  #"Navigation 1" = Navigation{[lakehouseId = "5cb9ed76-988c-4842-a3b3-b08c21c8139c"]}[Data],
   #"Navigation 2" = #"Navigation 1"{[Id = "temp_stock_data", ItemKind = "Table"]}[Data],
   #"Changed column type" = Table.TransformColumnTypes(#"Navigation 2", {{"Date", type date}}),
   // Extracting the latest date value
@@ -14,8 +14,8 @@ in
   FilteredRows;
 shared latest_date = let
   Source = Lakehouse.Contents(null),
-  Navigation = Source{[workspaceId = "1682a0d7-4d6c-47fd-88f0-3cb543c163d6"]}[Data],
-  #"Navigation 1" = Navigation{[lakehouseId = "b3b54ba2-cc81-4a95-b001-84731590108e"]}[Data],
+  Navigation = Source{[workspaceId = "81da3283-2446-4563-9f8c-168297009931"]}[Data],
+  #"Navigation 1" = Navigation{[lakehouseId = "5cb9ed76-988c-4842-a3b3-b08c21c8139c"]}[Data],
   #"Navigation 2" = #"Navigation 1"{[Id = "stock_data", ItemKind = "Table"]}[Data],
   #"Removed other columns" = Table.SelectColumns(#"Navigation 2", {"Date"}),
   #"Sorted rows" = Table.Sort(#"Removed other columns", {{"Date", Order.Descending}}),

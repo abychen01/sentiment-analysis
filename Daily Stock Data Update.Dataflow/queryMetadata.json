@@ -23,14 +23,14 @@
   },
   "connections": [
     {
-      "path": "Lakehouse",
-      "kind": "Lakehouse",
-      "connectionId": "{\"ClusterId\":\"fd9450ed-e905-4202-a7a7-8b6159a3f846\",\"DatasourceId\":\"120dd71f-5839-4ef0-980a-07cbce19a91c\"}"
-    },
-    {
       "path": "Warehouse",
       "kind": "Warehouse",
       "connectionId": "{\"ClusterId\":\"fd9450ed-e905-4202-a7a7-8b6159a3f846\",\"DatasourceId\":\"c6dd42e1-0f17-446d-8eed-4ff1348830d2\"}"
+    },
+    {
+      "path": "Lakehouse",
+      "kind": "Lakehouse",
+      "connectionId": "{\"ClusterId\":\"fd9450ed-e905-4202-a7a7-8b6159a3f846\",\"DatasourceId\":\"c0819bcc-9ecc-4b97-8a9c-68355c20079b\"}"
     }
   ]
 }
