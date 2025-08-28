@@ -41,8 +41,8 @@ in
     #"Changed column type 1";
 shared NYSE_calendar_DataDestination = let
   Pattern = Fabric.Warehouse([CreateNavigationProperties = false]),
-  Navigation_1 = Pattern{[workspaceId = "1682a0d7-4d6c-47fd-88f0-3cb543c163d6"]}[Data],
-  Navigation_2 = Navigation_1{[warehouseId = "5292dd6b-92ae-4368-95c6-5de1955ea910"]}[Data],
+  Navigation_1 = Pattern{[workspaceId = "81da3283-2446-4563-9f8c-168297009931"]}[Data],
+  Navigation_2 = Navigation_1{[warehouseId = "72f5af5b-6cd3-4840-bd61-9b708004f975"]}[Data],
   TableNavigation = Navigation_2{[Item = "NYSE_calendar", Schema = "dbo"]}?[Data]?
 in
   TableNavigation;

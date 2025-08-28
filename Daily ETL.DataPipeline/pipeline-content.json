@@ -30,13 +30,13 @@
             "type": "DataWarehouseTable",
             "schema": [],
             "linkedService": {
-              "name": "StagingWarehouseForDataflows_20250702101913",
+              "name": "StagingWarehouseForDataflows_20250828103213",
               "properties": {
                 "type": "DataWarehouse",
                 "typeProperties": {
-                  "artifactId": "5292dd6b-92ae-4368-95c6-5de1955ea910",
-                  "endpoint": "zhmk23ikgfteve2k3efvtgnvwa-26qieftmjx6upchqhs2uhqld2y.datawarehouse.fabric.microsoft.com",
-                  "workspaceId": "1682a0d7-4d6c-47fd-88f0-3cb543c163d6"
+                  "artifactId": "72f5af5b-6cd3-4840-bd61-9b708004f975",
+                  "endpoint": "zhmk23ikgfteve2k3efvtgnvwa-qmznvakgerrulh4mc2bjoaezge.datawarehouse.fabric.microsoft.com",
+                  "workspaceId": "81da3283-2446-4563-9f8c-168297009931"
                 },
                 "annotations": []
               }

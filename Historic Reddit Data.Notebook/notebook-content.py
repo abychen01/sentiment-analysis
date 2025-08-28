@@ -34,9 +34,9 @@ pip install praw textblob
 # CELL ********************
 
 df2 = spark.read.parquet("Files/creds")
-reddit_id = df.collect()[0]['reddit_id']
-reddit_secret = df.collect()[0]['reddit_secret']
-reddit_user_agent = df.collect()[0]['reddit_user_agent']
+reddit_id = df2.collect()[0]['reddit_id']
+reddit_secret = df2.collect()[0]['reddit_secret']
+reddit_user_agent = df2.collect()[0]['reddit_user_agent']
 
 
 # METADATA ********************
@@ -107,7 +107,7 @@ for y in range(10):
     for name in name_list:
         subreddit_name = name  
         for submission in reddit.subreddit(subreddit_name).\
-            search(ticker_list[y]["ticker"], sort = "top", limit=4000):
+            search(ticker_list[y]["ticker"], sort = "new", limit=12000):
             if submission.created_utc > 1640995200:  
                 comments_list.append((subreddit_name, submission.title, submission.score,\
                 submission.created_utc,ticker_list[y]["ticker"]))
@@ -227,7 +227,7 @@ display(df3)
 
 # CELL ********************
 
-df3.write.format("delta").mode("append").option("mergeSchema",True).saveAsTable("reddit_data")
+df3.write.format("delta").mode("overwrite").option("mergeSchema",True).saveAsTable("reddit_data")
 
 # METADATA ********************
 
@@ -239,7 +239,7 @@ df3.write.format("delta").mode("append").option("mergeSchema",True).saveAsTable(
 # CELL ********************
 
 df = spark.read.table("reddit_data")
-display(df.sort(desc("time_est")))
+display(df.count())
 
 # METADATA ********************
 
