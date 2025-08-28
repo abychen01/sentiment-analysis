@@ -9,59 +9,102 @@
         },
         "policy": {
           "timeout": "0.12:00:00",
+          "retry": 2,
+          "retryIntervalInSeconds": 30,
+          "secureInput": false,
+          "secureOutput": false
+        },
+        "name": "Daily Reddit Data ETL",
+        "dependsOn": []
+      },
+      {
+        "type": "Lookup",
+        "typeProperties": {
+          "source": {
+            "type": "DataWarehouseSource",
+            "sqlReaderQuery": "select NYSE_holiday from NYSE_calendar where Date = CAST(GETDATE() as DATE)",
+            "partitionOption": "None",
+            "queryTimeout": "02:00:00"
+          },
+          "datasetSettings": {
+            "type": "DataWarehouseTable",
+            "schema": [],
+            "linkedService": {
+              "name": "StagingWarehouseForDataflows_20250702101913",
+              "properties": {
+                "type": "DataWarehouse",
+                "typeProperties": {
+                  "artifactId": "5292dd6b-92ae-4368-95c6-5de1955ea910",
+                  "endpoint": "zhmk23ikgfteve2k3efvtgnvwa-26qieftmjx6upchqhs2uhqld2y.datawarehouse.fabric.microsoft.com",
+                  "workspaceId": "1682a0d7-4d6c-47fd-88f0-3cb543c163d6"
+                },
+                "annotations": []
+              }
+            },
+            "annotations": []
+          },
+          "firstRowOnly": true
+        },
+        "policy": {
+          "timeout": "0.12:00:00",
           "retry": 0,
           "retryIntervalInSeconds": 30,
           "secureInput": false,
           "secureOutput": false
         },
-        "name": "Daily Reddit data ETL",
-        "description": "To load the daily reddit data and save it to LH",
-        "dependsOn": []
+        "name": "Get_NYSE_holiday_value",
+        "dependsOn": [
+          {
+            "activity": "Daily Reddit Data ETL",
+            "dependencyConditions": [
+              "Succeeded"
+            ]
+          }
+        ]
       },
       {
         "type": "IfCondition",
         "typeProperties": {
           "expression": {
-            "value": "@equals(activity('Lookup1').output.firstRow.NYSE_holiday, False)",
+            "value": "@equals(activity('Get_NYSE_holiday_value').output.firstRow.NYSE_holiday, false)",
             "type": "Expression"
           },
           "ifTrueActivities": [
             {
               "type": "TridentNotebook",
               "typeProperties": {
-                "notebookId": "da6af546-5320-9e8b-48be-708bb6e9f6f1",
+                "notebookId": "be004021-947d-9105-4fde-b3c545c1d2ea",
                 "workspaceId": "00000000-0000-0000-0000-000000000000"
               },
               "policy": {
                 "timeout": "0.12:00:00",
-                "retry": 0,
+                "retry": 2,
                 "retryIntervalInSeconds": 30,
                 "secureInput": false,
                 "secureOutput": false
               },
-              "name": "Daily stock data ETL",
-              "description": "To get the daily stock data and save it to temp LH table",
+              "name": "Get latest stock data",
               "dependsOn": []
             },
             {
               "type": "RefreshDataflow",
               "typeProperties": {
-                "dataflowId": "2bb0c32f-4dc7-40bf-bb73-1f0d11ec7377",
-                "workspaceId": "c1bac311-bdf8-44ad-907a-6a2f4314508a",
-                "notifyOption": "NoNotification"
+                "dataflowId": "9d60242a-a826-89bc-4bbc-1d872a35ee35",
+                "workspaceId": "00000000-0000-0000-0000-000000000000",
+                "notifyOption": "NoNotification",
+                "dataflowType": "DataflowFabric"
               },
               "policy": {
                 "timeout": "0.12:00:00",
-                "retry": 0,
+                "retry": 2,
                 "retryIntervalInSeconds": 30,
                 "secureInput": false,
                 "secureOutput": false
               },
-              "name": "Filter latest stock data",
-              "description": "To filter the latest stock data and add the latest data to the WH table",
+              "name": "Updating new data to stock_data",
               "dependsOn": [
                 {
-                  "activity": "Daily stock data ETL",
+                  "activity": "Get latest stock data",
                   "dependencyConditions": [
                     "Succeeded"
                   ]
@@ -71,10 +114,10 @@
           ],
           "ifFalseActivities": []
         },
-        "name": "If Condition1",
+        "name": "Condition to fetch new data",
         "dependsOn": [
           {
-            "activity": "Lookup1",
+            "activity": "Get_NYSE_holiday_value",
             "dependencyConditions": [
               "Succeeded"
             ]
@@ -82,31 +125,10 @@
         ]
       },
       {
-        "type": "Lookup",
+        "type": "TridentNotebook",
         "typeProperties": {
-          "source": {
-            "type": "DataWarehouseSource",
-            "sqlReaderQuery": "select NYSE_holiday from NYSE_calendar where date_value = CAST(GETDATE() as DATE)",
-            "partitionOption": "None",
-            "queryTimeout": "02:00:00"
-          },
-          "datasetSettings": {
-            "type": "DataWarehouseTable",
-            "schema": [],
-            "linkedService": {
-              "name": "Stock_data",
-              "properties": {
-                "type": "DataWarehouse",
-                "typeProperties": {
-                  "artifactId": "b5992a81-df73-43a3-bc93-57a46b5c8c08",
-                  "endpoint": "zhmk23ikgfteve2k3efvtgnvwa-chb3vqpyxwwujed2nixugfcqri.datawarehouse.fabric.microsoft.com",
-                  "workspaceId": "c1bac311-bdf8-44ad-907a-6a2f4314508a"
-                },
-                "annotations": []
-              }
-            },
-            "annotations": []
-          }
+          "notebookId": "a8977fce-8b84-ae29-47ce-9024fb5d2e19",
+          "workspaceId": "00000000-0000-0000-0000-000000000000"
         },
         "policy": {
           "timeout": "0.12:00:00",
@@ -115,10 +137,10 @@
           "secureInput": false,
           "secureOutput": false
         },
-        "name": "Lookup1",
+        "name": "AWS RDS sync",
         "dependsOn": [
           {
-            "activity": "Daily Reddit data ETL",
+            "activity": "Condition to fetch new data",
             "dependencyConditions": [
               "Succeeded"
             ]

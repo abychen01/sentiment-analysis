@@ -1,0 +1,14 @@
+[
+  {
+    "name": "NYSE_calendar",
+    "path": "/Tables",
+    "target": {
+      "type": "OneLake",
+      "oneLake": {
+        "path": "Tables/dbo/NYSE_calendar",
+        "itemId": "5292dd6b-92ae-4368-95c6-5de1955ea910",
+        "workspaceId": "1682a0d7-4d6c-47fd-88f0-3cb543c163d6"
+      }
+    }
+  }
+]

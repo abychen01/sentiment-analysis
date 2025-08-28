@@ -8,9 +8,8 @@
 # META   },
 # META   "dependencies": {
 # META     "lakehouse": {
-# META       "default_lakehouse": "b2f28c43-5191-41e3-a5cd-40721f8bf8e0",
-# META       "default_lakehouse_name": "Reddit_Data",
-# META       "default_lakehouse_workspace_id": "1682a0d7-4d6c-47fd-88f0-3cb543c163d6",
+# META       "default_lakehouse_name": "",
+# META       "default_lakehouse_workspace_id": "",
 # META       "known_lakehouses": [
 # META         {
 # META           "id": "b2f28c43-5191-41e3-a5cd-40721f8bf8e0"
@@ -49,7 +48,9 @@ reddit = praw.Reddit(
 
 #  Define subreddit and ticker lists
 comments_list = []
-query = "TESLA OR $TSLA OR tesla OR $tsla"
+
+#query = "TESLA OR $TSLA OR tesla OR $tsla"
+
 query1 = [
     (["TESLA OR $TSLA OR tesla OR $tsla"],),
     (["Microsoft OR MSFT OR microsoft OR msft OR $MSFT OR $msft"],),
@@ -82,11 +83,6 @@ df2 = spark.createDataFrame(query1, schema=ticker_schema)
 name_list = df.select("names").collect()[0]["names"]  # Extract the array
 ticker_list =df2.collect()
 
-# Collect posts created since last ingestion timestamp
-dff = spark.read.table("reddit_data")
-dff = dff.select(dff.time_utc).orderBy(desc(dff.time_utc)).limit(1)
-dff = (dff.withColumn("time_utc",unix_timestamp(dff.time_utc)))
-max_timestamp = dff.select("time_utc").collect()[0][0]
 
 # searching the reddit posts for posts related to the stock tickers
 x = 0
@@ -95,13 +91,13 @@ for y in range(10):
     for name in name_list:
         subreddit_name = name  
         for submission in reddit.subreddit(subreddit_name).\
-            search(ticker_list[y]["ticker"], sort = "new", limit=10000):
-            if submission.created_utc > max_timestamp:  
+            search(ticker_list[y]["ticker"], sort = "top", limit=1000):
+            if submission.created_utc > 1640995200:  
                 comments_list.append((subreddit_name, submission.title, submission.score,\
                 submission.created_utc,ticker_list[y]["ticker"]))
 
 # creating schema for extracted data
-table_schema = StructType([
+schema = StructType([
     StructField("subreddit_name", StringType(), True),
     StructField("post_title", StringType(), True),
     StructField("score", IntegerType(), True),
@@ -109,7 +105,7 @@ table_schema = StructType([
     StructField("ticker", StringType(), True)
 
 ])
-df = spark.createDataFrame(comments_list, schema = table_schema)
+df = spark.createDataFrame(comments_list, schema = schema)
 
 # Convert UNIX seconds to timestamp, then to America/New_York timezone
 # Adjust ET date: if before 4pm ET, count as previous trading day
@@ -121,6 +117,20 @@ df = df.withColumn("time_utc", from_unixtime(col("time_utc")).cast("timestamp"))
 df = df.withColumn("time_est", when(hour("time_est") < 16,\
     (date_sub("time_est",1)).cast("date")).otherwise((df.time_est).cast("date")))
 df = df.drop("ticker","actual_ticker")
+
+display(df)
+
+# METADATA ********************
+
+# META {
+# META   "language": "python",
+# META   "language_group": "synapse_pyspark"
+# META }
+
+# CELL ********************
+
+#display(df.sort(asc("time_est")))
+print(df.count())
 
 
 # METADATA ********************
@@ -189,8 +199,41 @@ df3 = df3.withColumn("sentiment_label",\
         .otherwise(df3.sentiment_label))
 
 # Show results
-#display(df3)
+display(df3)
+#df3.write.format("delta").mode("append").option("mergeSchema",True).saveAsTable("reddit_data")
+
+# METADATA ********************
+
+# META {
+# META   "language": "python",
+# META   "language_group": "synapse_pyspark"
+# META }
+
+# CELL ********************
+
 df3.write.format("delta").mode("append").option("mergeSchema",True).saveAsTable("reddit_data")
+
+# METADATA ********************
+
+# META {
+# META   "language": "python",
+# META   "language_group": "synapse_pyspark"
+# META }
+
+# CELL ********************
+
+df = spark.read.table("reddit_data")
+display(df.sort(desc("time_est")))
+
+# METADATA ********************
+
+# META {
+# META   "language": "python",
+# META   "language_group": "synapse_pyspark"
+# META }
+
+# CELL ********************
+
 
 # METADATA ********************
 

@@ -1,0 +1,150 @@
+table stock_data
+	lineageTag: 113c0dd5-7ed4-40a3-a310-8f5f6a8f75b8
+
+	measure closing_price = max(stock_data[Close])
+		lineageTag: 5d5f003c-1b5c-439f-8877-803930b9138f
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	measure 'difference to prev closing' = ```
+			
+			    IF(
+			        [closing_price] = BLANK(),
+			        BLANK(),
+			        [closing_price] - [PrevTradingDayClose2]
+			    )
+			```
+		lineageTag: 7b714503-aa0e-49b0-b576-c52f1c10c6af
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	measure PrevTradingDayClose2 = ```
+			
+			VAR CurrentDate = MAX(NYSE_calendar[date])  // Get the current row's date
+			VAR PrevTradingDay = 
+			    CALCULATE(
+			        MAX(NYSE_calendar[date]), 
+			        FILTER(
+			            ALL(NYSE_calendar),  // Use ALL instead of ALLSELECTED to ignore slicer filters
+			            NYSE_calendar[date] < CurrentDate && NYSE_calendar[NYSE_holiday] = FALSE
+			        )
+			    )  // Find the previous trading day
+			RETURN
+			    CALCULATE(
+			        [closing_price],
+			        NYSE_calendar[date] = PrevTradingDay,
+			        ALL(NYSE_calendar)  // Ensure closing_price is retrieved regardless of slicer filters
+			    )
+			```
+		lineageTag: b5ee48bd-c995-46ff-9ea7-b28ddf72a587
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	measure 'prev day difference percentage' = ```
+			
+			    [difference to prev closing] / [PrevTradingDayClose2]
+			```
+		formatString: 0.00%;-0.00%;0.00%
+		lineageTag: ee0549e5-de38-4325-af1b-434c3499383e
+
+	measure 'Price difference' =
+			
+			IF(
+			    NOT(ISBLANK([first closing])) && NOT(ISBLANK([last closing])),
+			    [first closing] - [last closing],
+			    BLANK()
+			)
+		lineageTag: e4f9a394-ed67-4d28-ab02-4e121e6c4a54
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	measure 'Percentage difference' =
+			
+			IF(
+			    NOT(ISBLANK([first closing])) && NOT(ISBLANK([last closing])),
+			    ([first closing] - [last closing]) / [first closing],
+			    BLANK()
+			)
+		formatString: 0.00%;-0.00%;0.00%
+		lineageTag: dcf09478-968e-418b-8dca-84f4ebfd1102
+
+	measure 'last closing' = ```
+			
+			VAR first_date = 
+			    CALCULATE(
+			        MAX(stock_data[Date]),
+			        ALLSELECTED(NYSE_calendar)
+			    )
+			RETURN
+			CALCULATE(
+			    AVERAGE(stock_data[close]),  // ← Reference the COLUMN, not the measure
+			    NYSE_calendar[Date] = first_date
+			)
+			```
+		lineageTag: 4b1db6c7-b1c2-424e-8af1-caf7ee964be3
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	measure 'first closing' = ```
+			
+			    var close_date = 
+			        CALCULATE(
+			            MIN(stock_data[Date]),
+			            ALLSELECTED(NYSE_calendar)
+			        )
+			    RETURN
+			    CALCULATE(
+			        MAX(stock_data[Close]),
+			        NYSE_calendar[Date] = close_date
+			    )
+			        
+			```
+		lineageTag: e5f6c234-6e01-435f-8436-f6b10855061e
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	column Date
+		dataType: dateTime
+		formatString: Short Date
+		lineageTag: 9d255571-08d6-468a-9c23-839ff4e993e3
+		summarizeBy: none
+		sourceColumn: Date
+
+		changedProperty = DataType
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation UnderlyingDateTimeDataType = Date
+
+	column Close
+		dataType: double
+		lineageTag: c88734b1-cc3e-41bb-8ba8-34a93a0b40c7
+		summarizeBy: none
+		sourceColumn: Close
+
+		annotation SummarizationSetBy = User
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	column ticker
+		dataType: string
+		lineageTag: 70cb76ce-e122-46cc-9794-fa3f172c26ad
+		summarizeBy: none
+		sourceColumn: ticker
+
+		annotation SummarizationSetBy = Automatic
+
+	partition stock_data = m
+		mode: import
+		source =
+				let
+				    Source = Sql.Database("fabric-rds-sql-server.cxm8ga0awaka.eu-north-1.rds.amazonaws.com", "sentiment_analysis"),
+				    dbo_stock_data = Source{[Schema="dbo",Item="stock_data"]}[Data],
+				    #"Changed Type" = Table.TransformColumnTypes(dbo_stock_data,{{"Date", type datetime}})
+				in
+				    #"Changed Type"
+
+	annotation PBI_NavigationStepName = Navigation
+
+	annotation PBI_ResultType = Table
+

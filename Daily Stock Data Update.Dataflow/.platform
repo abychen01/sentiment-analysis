@@ -1,0 +1,11 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/gitIntegration/platformProperties/2.0.0/schema.json",
+  "metadata": {
+    "type": "Dataflow",
+    "displayName": "Daily Stock Data Update"
+  },
+  "config": {
+    "version": "2.0",
+    "logicalId": "9d60242a-a826-89bc-4bbc-1d872a35ee35"
+  }
+}

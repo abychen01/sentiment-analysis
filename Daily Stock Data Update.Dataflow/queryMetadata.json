@@ -1,0 +1,36 @@
+{
+  "formatVersion": "202502",
+  "computeEngineSettings": {},
+  "name": "Daily Stock Data Update",
+  "queryGroups": [],
+  "documentLocale": "en-US",
+  "queriesMetadata": {
+    "temp_stock_data": {
+      "queryId": "aa8d27df-21c4-4dde-870a-0a3d4bdb1caa",
+      "queryName": "temp_stock_data",
+      "loadEnabled": false
+    },
+    "latest_date": {
+      "queryId": "ec8bba30-98e5-43e9-9954-353a4cfb8c85",
+      "queryName": "latest_date"
+    },
+    "temp_stock_data_DataDestination": {
+      "queryId": "aa8afc78-e0f8-4247-9d2d-0f47af3b3989",
+      "queryName": "temp_stock_data_DataDestination",
+      "isHidden": true,
+      "loadEnabled": false
+    }
+  },
+  "connections": [
+    {
+      "path": "Lakehouse",
+      "kind": "Lakehouse",
+      "connectionId": "{\"ClusterId\":\"fd9450ed-e905-4202-a7a7-8b6159a3f846\",\"DatasourceId\":\"120dd71f-5839-4ef0-980a-07cbce19a91c\"}"
+    },
+    {
+      "path": "Warehouse",
+      "kind": "Warehouse",
+      "connectionId": "{\"ClusterId\":\"fd9450ed-e905-4202-a7a7-8b6159a3f846\",\"DatasourceId\":\"c6dd42e1-0f17-446d-8eed-4ff1348830d2\"}"
+    }
+  ]
+}

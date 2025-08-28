@@ -1,0 +1,50 @@
+table ticker
+	lineageTag: 3441ec80-6c8b-44de-8c65-d7b468b236ad
+
+	measure short_name = ```
+			
+			IF(
+			    SELECTEDVALUE(ticker[ticker]) = "TSM", 
+			    "Taiwan Semiconductor Manufacturing", 
+			    SELECTEDVALUE(ticker[name]
+			))
+			```
+		lineageTag: 320376f5-4926-41b2-9603-220a52af2745
+
+	column ticker
+		dataType: string
+		lineageTag: 1e8c89d2-8563-4e13-a7c5-bd36fe163409
+		summarizeBy: none
+		sourceColumn: ticker
+
+		annotation SummarizationSetBy = Automatic
+
+	column name
+		dataType: string
+		lineageTag: ece62de9-7545-43a0-9666-ed0136aef421
+		summarizeBy: none
+		sourceColumn: name
+
+		annotation SummarizationSetBy = Automatic
+
+	column description
+		dataType: string
+		lineageTag: 7abf96ea-bcbf-405f-8966-033ccb2244f0
+		summarizeBy: none
+		sourceColumn: description
+
+		annotation SummarizationSetBy = Automatic
+
+	partition ticker = m
+		mode: import
+		source =
+				let
+				    Source = Sql.Database("fabric-rds-sql-server.cxm8ga0awaka.eu-north-1.rds.amazonaws.com", "sentiment_analysis"),
+				    dbo_ticker = Source{[Schema="dbo",Item="ticker"]}[Data]
+				in
+				    dbo_ticker
+
+	annotation PBI_NavigationStepName = Navigation
+
+	annotation PBI_ResultType = Table
+

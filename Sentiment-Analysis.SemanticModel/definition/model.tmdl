@@ -1,0 +1,27 @@
+model Model
+	culture: en-GB
+	defaultPowerBIDataSourceVersion: powerBI_V3
+	sourceQueryCulture: en-GB
+	dataAccessOptions
+		legacyRedirects
+		returnErrorValuesAsNull
+
+annotation PBI_QueryOrder = ["Date","NYSE_calendar","stock_data","reddit_data","ticker","RangeStart","RangeEnd"]
+
+annotation __PBI_TimeIntelligenceEnabled = 1
+
+annotation PBIDesktopVersion = 2.146.1026.0 (25.08)+fb98ab832373de81dccd5c01cd96306a48477556
+
+annotation PBI_ProTooling = ["DaxQueryView_Desktop"]
+
+ref table Date
+ref table DateTableTemplate_df1a04db-f675-46c5-9bd9-d9b07f56938b
+ref table LocalDateTable_a82af818-de24-436c-b7dd-13a728603957
+ref table NYSE_calendar
+ref table stock_data
+ref table reddit_data
+ref table LocalDateTable_9ceede7d-85cc-4d95-8b6b-0900c27ff55c
+ref table ticker
+
+ref cultureInfo en-GB
+
