@@ -6,8 +6,8 @@
       "jobType": "Execute",
       "configuration": {
         "type": "Daily",
-        "startDateTime": "2025-07-01T00:00:00",
-        "endDateTime": "2025-11-03T23:59:00",
+        "startDateTime": "2025-08-28T00:00:00",
+        "endDateTime": "2025-12-29T23:59:00",
         "localTimeZoneId": "Eastern Standard Time",
         "times": [
           "09:15",

@@ -38,7 +38,7 @@ import pyodbc
 
 password = spark.read.parquet("Files/creds").collect()[0]['password']
 
-table_list = ["Stock_Data.Date","Stock_Data.NYSE_calendar","Stock_Data.stock_data","reddit_data"]
+table_list = ["Stock_Data.NYSE_calendar","Stock_Data.stock_data","reddit_data"]
 table_list_sql = ["Date","NYSE_calendar","stock_data","reddit_data"]
 
 db = "sentiment_analysis"
@@ -130,7 +130,7 @@ def converts(datatype):
 for table in table_list:
     
     df = spark.read.table(table)
-    if table == "Stock_Data.NYSE_calendar" or table == "Stock_Data.Date":
+    if table == "Stock_Data.NYSE_calendar":
         df = df.withColumnsRenamed({"Week of year": "week_of_year", "Day name": "day_name"})
     
     table_cols = [f"{field.name} {converts(field.dataType)}" for field in df.schema.fields]
@@ -180,8 +180,7 @@ jdbc_properties = {
 }
 
 def converts2(table_name):
-    if table_name == "Stock_Data.Date":
-        return "Date"
+
     if table_name =="Stock_Data.NYSE_calendar":
         return "NYSE_calendar"
     if table_name =="Stock_Data.stock_data":
@@ -191,8 +190,11 @@ for table in table_list:
 
     try:
         df = spark.read.table(table)
-        if table == "Stock_Data.NYSE_calendar" or table == "Stock_Data.Date":
-           df = df.withColumnsRenamed({"Week of year": "week_of_year", "Day name": "day_name"})
+        if table == "Stock_Data.NYSE_calendar":
+            df = df.withColumnsRenamed({"Week of year": "week_of_year", "Day name": "day_name"})
+            mode = "overwrite"
+        else:
+            mode = "append"
 
         if table != "reddit_data":
             table = converts2(table)
@@ -205,7 +207,7 @@ for table in table_list:
             .option("password", jdbc_properties["password"]) \
             .option("driver", jdbc_properties["driver"]) \
             .option("batchsize", 1000) \
-            .mode("overwrite") \
+            .mode(mode) \
             .save()
         print(f"Successfully wrote data to RDS table '{table}'.")
 

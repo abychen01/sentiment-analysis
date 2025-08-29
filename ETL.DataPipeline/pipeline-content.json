@@ -9,13 +9,75 @@
         },
         "policy": {
           "timeout": "0.12:00:00",
-          "retry": 2,
+          "retry": 0,
           "retryIntervalInSeconds": 30,
           "secureInput": false,
           "secureOutput": false
         },
-        "name": "Daily Reddit Data ETL",
+        "name": "Notebook1",
         "dependsOn": []
+      },
+      {
+        "type": "IfCondition",
+        "typeProperties": {
+          "expression": {
+            "value": "@equals(activity('Lookup1').output.firstRow.NYSE_holiday, false)",
+            "type": "Expression"
+          },
+          "ifTrueActivities": [
+            {
+              "type": "TridentNotebook",
+              "typeProperties": {
+                "notebookId": "be004021-947d-9105-4fde-b3c545c1d2ea",
+                "workspaceId": "00000000-0000-0000-0000-000000000000"
+              },
+              "policy": {
+                "timeout": "0.12:00:00",
+                "retry": 0,
+                "retryIntervalInSeconds": 30,
+                "secureInput": false,
+                "secureOutput": false
+              },
+              "name": "Notebook2",
+              "dependsOn": []
+            },
+            {
+              "type": "RefreshDataflow",
+              "typeProperties": {
+                "dataflowId": "9d60242a-a826-89bc-4bbc-1d872a35ee35",
+                "workspaceId": "00000000-0000-0000-0000-000000000000",
+                "notifyOption": "NoNotification",
+                "dataflowType": "DataflowFabric"
+              },
+              "policy": {
+                "timeout": "0.12:00:00",
+                "retry": 0,
+                "retryIntervalInSeconds": 30,
+                "secureInput": false,
+                "secureOutput": false
+              },
+              "name": "Dataflow1",
+              "dependsOn": [
+                {
+                  "activity": "Notebook2",
+                  "dependencyConditions": [
+                    "Succeeded"
+                  ]
+                }
+              ]
+            }
+          ],
+          "ifFalseActivities": []
+        },
+        "name": "If Condition1",
+        "dependsOn": [
+          {
+            "activity": "Lookup1",
+            "dependencyConditions": [
+              "Succeeded"
+            ]
+          }
+        ]
       },
       {
         "type": "Lookup",
@@ -42,8 +104,7 @@
               }
             },
             "annotations": []
-          },
-          "firstRowOnly": true
+          }
         },
         "policy": {
           "timeout": "0.12:00:00",
@@ -52,72 +113,10 @@
           "secureInput": false,
           "secureOutput": false
         },
-        "name": "Get_NYSE_holiday_value",
+        "name": "Lookup1",
         "dependsOn": [
           {
-            "activity": "Daily Reddit Data ETL",
-            "dependencyConditions": [
-              "Succeeded"
-            ]
-          }
-        ]
-      },
-      {
-        "type": "IfCondition",
-        "typeProperties": {
-          "expression": {
-            "value": "@equals(activity('Get_NYSE_holiday_value').output.firstRow.NYSE_holiday, false)",
-            "type": "Expression"
-          },
-          "ifTrueActivities": [
-            {
-              "type": "TridentNotebook",
-              "typeProperties": {
-                "notebookId": "be004021-947d-9105-4fde-b3c545c1d2ea",
-                "workspaceId": "00000000-0000-0000-0000-000000000000"
-              },
-              "policy": {
-                "timeout": "0.12:00:00",
-                "retry": 2,
-                "retryIntervalInSeconds": 30,
-                "secureInput": false,
-                "secureOutput": false
-              },
-              "name": "Get latest stock data",
-              "dependsOn": []
-            },
-            {
-              "type": "RefreshDataflow",
-              "typeProperties": {
-                "dataflowId": "9d60242a-a826-89bc-4bbc-1d872a35ee35",
-                "workspaceId": "00000000-0000-0000-0000-000000000000",
-                "notifyOption": "NoNotification",
-                "dataflowType": "DataflowFabric"
-              },
-              "policy": {
-                "timeout": "0.12:00:00",
-                "retry": 2,
-                "retryIntervalInSeconds": 30,
-                "secureInput": false,
-                "secureOutput": false
-              },
-              "name": "Updating new data to stock_data",
-              "dependsOn": [
-                {
-                  "activity": "Get latest stock data",
-                  "dependencyConditions": [
-                    "Succeeded"
-                  ]
-                }
-              ]
-            }
-          ],
-          "ifFalseActivities": []
-        },
-        "name": "Condition to fetch new data",
-        "dependsOn": [
-          {
-            "activity": "Get_NYSE_holiday_value",
+            "activity": "Notebook1",
             "dependencyConditions": [
               "Succeeded"
             ]
@@ -137,10 +136,10 @@
           "secureInput": false,
           "secureOutput": false
         },
-        "name": "AWS RDS sync",
+        "name": "Notebook3",
         "dependsOn": [
           {
-            "activity": "Condition to fetch new data",
+            "activity": "If Condition1",
             "dependencyConditions": [
               "Succeeded"
             ]
