@@ -8,15 +8,15 @@
 # META   },
 # META   "dependencies": {
 # META     "lakehouse": {
-# META       "default_lakehouse": "b2f28c43-5191-41e3-a5cd-40721f8bf8e0",
-# META       "default_lakehouse_name": "Reddit_Data",
-# META       "default_lakehouse_workspace_id": "1682a0d7-4d6c-47fd-88f0-3cb543c163d6",
+# META       "default_lakehouse": "f8400f71-0acf-4158-b761-0b86bf4c9f15",
+# META       "default_lakehouse_name": "Reddit__Data",
+# META       "default_lakehouse_workspace_id": "81da3283-2446-4563-9f8c-168297009931",
 # META       "known_lakehouses": [
 # META         {
-# META           "id": "b2f28c43-5191-41e3-a5cd-40721f8bf8e0"
+# META           "id": "5cb9ed76-988c-4842-a3b3-b08c21c8139c"
 # META         },
 # META         {
-# META           "id": "b3b54ba2-cc81-4a95-b001-84731590108e"
+# META           "id": "f8400f71-0acf-4158-b761-0b86bf4c9f15"
 # META         }
 # META       ]
 # META     }
