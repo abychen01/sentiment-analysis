@@ -41,13 +41,13 @@ password = spark.read.parquet("Files/creds").collect()[0]['password']
 table_list = ["Stock_Data.NYSE_calendar","Stock_Data.stock_data","reddit_data"]
 table_list_sql = ["Date","NYSE_calendar","stock_data","reddit_data"]
 
-db = "sentiment_analysis"
+db = "myFreeDB"
 
 conn_str_master = (
             f"DRIVER={{ODBC Driver 18 for SQL Server}};"
-            f"SERVER=fabric-rds-sql-server.cxm8ga0awaka.eu-north-1.rds.amazonaws.com,1433;"
+            f"SERVER=tcp:myfreesqldbserver66.database.windows.net,1433;"
             f"DATABASE=master;"
-            f"UID=admin;"
+            f"UID=admin2;"
             f"PWD={password};"
             f"Encrypt=yes;"
             f"TrustServerCertificate=yes;"
@@ -56,9 +56,9 @@ conn_str_master = (
         
 conn_str = (
             f"DRIVER={{ODBC Driver 18 for SQL Server}};"
-            f"SERVER=fabric-rds-sql-server.cxm8ga0awaka.eu-north-1.rds.amazonaws.com,1433;"
+            f"SERVER=tcp:myfreesqldbserver66.database.windows.net,1433;"
             f"DATABASE={db};"
-            f"UID=admin;"
+            f"UID=admin2;"
             f"PWD={password};"
             f"Encrypt=yes;"
             f"TrustServerCertificate=yes;"
@@ -171,10 +171,18 @@ for table in table_list_sql:
 
 # CELL ********************
 
-jdbc_url = f"jdbc:sqlserver://fabric-rds-sql-server.cxm8ga0awaka.eu-north-1.rds.amazonaws.com:1433;\
+jdbc_url_aws_rds = f"jdbc:sqlserver://fabric-rds-sql-server.cxm8ga0awaka.eu-north-1.rds.amazonaws.com:1433;\
             databaseName={db};encrypt=true;trustServerCertificate=true"
+
+jdbc_url = "jdbc:sqlserver://myfreesqldbserver66.database.windows.net:1433;" \
+           "databaseName=myFreeDB;" \
+           "encrypt=true;" \
+           "trustServerCertificate=false;" \
+           "hostNameInCertificate=*.database.windows.net;" \
+           "loginTimeout=30;"
+
 jdbc_properties = {
-    "user": "admin",
+    "user": "admin2",
     "password": password,
     "driver": "com.microsoft.sqlserver.jdbc.SQLServerDriver"
 }
@@ -194,7 +202,7 @@ for table in table_list:
             df = df.withColumnsRenamed({"Week of year": "week_of_year", "Day name": "day_name"})
             mode = "overwrite"
         else:
-            mode = "append"
+            mode = "overwrite"
 
         if table != "reddit_data":
             table = converts2(table)
@@ -229,6 +237,8 @@ for table in table_list:
 
 # testing.....
 
+'''
+
 for table in table_list_sql:
     
 
@@ -250,63 +260,66 @@ for table in table_list_sql:
                     break
 
 
-
-
-# METADATA ********************
-
-# META {
-# META   "language": "python",
-# META   "language_group": "synapse_pyspark"
-# META }
-
-# CELL ********************
-
-with pyodbc.connect(conn_str, autocommit=True) as conn:
-    with conn.cursor() as cursor:
-        cursor.execute("SELECT * FROM ticker")
-
-        while True:
-            result = cursor.fetchall()
-            if result:
-                print(result)
-                print()
-            if not cursor.nextset():
-                break
-
-# METADATA ********************
-
-# META {
-# META   "language": "python",
-# META   "language_group": "synapse_pyspark"
-# META }
-
-# CELL ********************
-
 '''
+
+# METADATA ********************
+
+# META {
+# META   "language": "python",
+# META   "language_group": "synapse_pyspark"
+# META }
+
+# CELL ********************
+
+
 # create ticker table
+
 
 with pyodbc.connect(conn_str, autocommit=True) as conn:
     with conn.cursor() as cursor:
         cursor.execute(""" 
-            CREATE TABLE ticker (
-            ticker VARCHAR(10),
-            name VARCHAR(100),
-            description VARCHAR(255)
-        );
+            IF NOT EXISTS(SELECT name FROM sys.tables WHERE name = ?)
+                    BEGIN
+                    SELECT '[' + ? + '] doesnt exist'
+                    EXEC('CREATE TABLE ticker (
+                            ticker VARCHAR(10),
+                            name VARCHAR(100),
+                            description VARCHAR(255)
+                        );
+                    ')
+                    INSERT INTO ticker (ticker, name, description) VALUES
+                            ('TSLA', 'Tesla, Inc.', 'Tesla designs and manufactures electric vehicles and clean energy products.'),
+                            ('MSFT', 'Microsoft Corporation', 'Microsoft develops software, services, and hardware products, including Windows and Azure.'),
+                            ('AAPL', 'Apple Inc.', 'Apple designs and sells electronics, software, and online services, best known for the iPhone.'),
+                            ('GOOGL', 'Alphabet Inc.', 'Alphabet is the parent company of Google, specializing in internet services and products.'),
+                            ('NVDA', 'NVIDIA Corporation', 'NVIDIA designs graphics processing units and AI hardware/software solutions.'),
+                            ('AMZN', 'Amazon.com, Inc.', 'Amazon operates e-commerce platforms and provides cloud computing via AWS.'),
+                            ('META', 'Meta Platforms, Inc.', 'Meta operates social media services like Facebook, Instagram, and WhatsApp.'),
+                            ('AVGO', 'Broadcom Inc.', 'Broadcom designs, develops, and supplies semiconductor and infrastructure software solutions.'),
+                            ('TSM', 'Taiwan Semiconductor Manufacturing Company', 'TSMC manufactures semiconductors for global electronics companies.');
+                    SELECT '[' + ? + '] created';
+                    END
+                ELSE
+                    BEGIN
+                    SELECT '[' + ? + '] exist'
+                    END
+            
 
-        INSERT INTO ticker (ticker, name, description) VALUES
-        ('TSLA', 'Tesla, Inc.', 'Tesla designs and manufactures electric vehicles and clean energy products.'),
-        ('MSFT', 'Microsoft Corporation', 'Microsoft develops software, services, and hardware products, including Windows and Azure.'),
-        ('AAPL', 'Apple Inc.', 'Apple designs and sells electronics, software, and online services, best known for the iPhone.'),
-        ('GOOGL', 'Alphabet Inc.', 'Alphabet is the parent company of Google, specializing in internet services and products.'),
-        ('NVDA', 'NVIDIA Corporation', 'NVIDIA designs graphics processing units and AI hardware/software solutions.'),
-        ('AMZN', 'Amazon.com, Inc.', 'Amazon operates e-commerce platforms and provides cloud computing via AWS.'),
-        ('META', 'Meta Platforms, Inc.', 'Meta operates social media services like Facebook, Instagram, and WhatsApp.'),
-        ('AVGO', 'Broadcom Inc.', 'Broadcom designs, develops, and supplies semiconductor and infrastructure software solutions.'),
-        ('TSM', 'Taiwan Semiconductor Manufacturing Company', 'TSMC manufactures semiconductors for global electronics companies.');
-        """)
+            
+        
+        ""","ticker","ticker","ticker","ticker")
 
-'''
+
+
+# METADATA ********************
+
+# META {
+# META   "language": "python",
+# META   "language_group": "synapse_pyspark"
+# META }
+
+# CELL ********************
+
 
 # METADATA ********************
 
