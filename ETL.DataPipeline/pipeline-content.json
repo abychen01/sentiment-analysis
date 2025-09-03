@@ -14,14 +14,14 @@
           "secureInput": false,
           "secureOutput": false
         },
-        "name": "Notebook1",
+        "name": "Daily reddit data",
         "dependsOn": []
       },
       {
         "type": "IfCondition",
         "typeProperties": {
           "expression": {
-            "value": "@equals(activity('Lookup1').output.firstRow.NYSE_holiday, false)",
+            "value": "@equals(activity('Lookup for NYSE_holiday').output.firstRow.NYSE_holiday, false)",
             "type": "Expression"
           },
           "ifTrueActivities": [
@@ -72,7 +72,7 @@
         "name": "If Condition1",
         "dependsOn": [
           {
-            "activity": "Lookup1",
+            "activity": "Lookup for NYSE_holiday",
             "dependencyConditions": [
               "Succeeded"
             ]
@@ -113,10 +113,10 @@
           "secureInput": false,
           "secureOutput": false
         },
-        "name": "Lookup1",
+        "name": "Lookup for NYSE_holiday",
         "dependsOn": [
           {
-            "activity": "Notebook1",
+            "activity": "Daily reddit data",
             "dependencyConditions": [
               "Succeeded"
             ]
