@@ -38,7 +38,7 @@
                 "secureInput": false,
                 "secureOutput": false
               },
-              "name": "Notebook2",
+              "name": "Daily stock data",
               "dependsOn": []
             },
             {
@@ -56,10 +56,10 @@
                 "secureInput": false,
                 "secureOutput": false
               },
-              "name": "Dataflow1",
+              "name": "Daily stock data updata",
               "dependsOn": [
                 {
-                  "activity": "Notebook2",
+                  "activity": "Daily stock data",
                   "dependencyConditions": [
                     "Succeeded"
                   ]
@@ -136,7 +136,7 @@
           "secureInput": false,
           "secureOutput": false
         },
-        "name": "Notebook3",
+        "name": "AWS RDS Sync",
         "dependsOn": [
           {
             "activity": "If Condition1",

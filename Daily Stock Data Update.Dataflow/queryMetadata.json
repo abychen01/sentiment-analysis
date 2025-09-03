@@ -15,7 +15,7 @@
       "queryName": "latest_date"
     },
     "temp_stock_data_DataDestination": {
-      "queryId": "a8d87ee9-623c-45a4-a98d-aed7077f78cf",
+      "queryId": "985b4691-5b74-469e-8d19-97d7928ef442",
       "queryName": "temp_stock_data_DataDestination",
       "isHidden": true,
       "loadEnabled": false

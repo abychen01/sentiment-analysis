@@ -1,6 +1,6 @@
 [StagingDefinition = [Kind = "FastCopy"]]
 section Section1;
-[DataDestinations = {[Definition = [Kind = "Reference", QueryName = "temp_stock_data_DataDestination", IsNewTarget = false], Settings = [Kind = "Manual", AllowCreation = false, ColumnSettings = [Mappings = {[SourceColumnName = "Date", DestinationColumnName = "Date"], [SourceColumnName = "Close", DestinationColumnName = "Close"], [SourceColumnName = "ticker", DestinationColumnName = "ticker"]}], DynamicSchema = false, UpdateMethod = [Kind = "Replace"], TypeSettings = [Kind = "Table"]]]}]
+[DataDestinations = {[Definition = [Kind = "Reference", QueryName = "temp_stock_data_DataDestination", IsNewTarget = false], Settings = [Kind = "Manual", AllowCreation = false, ColumnSettings = [Mappings = {[SourceColumnName = "Date", DestinationColumnName = "Date"], [SourceColumnName = "Close", DestinationColumnName = "Close"], [SourceColumnName = "ticker", DestinationColumnName = "ticker"]}], DynamicSchema = false, UpdateMethod = [Kind = "Append"], TypeSettings = [Kind = "Table"]]]}]
 shared temp_stock_data = let
   Source = Lakehouse.Contents(null),
   Navigation = Source{[workspaceId = "81da3283-2446-4563-9f8c-168297009931"]}[Data],
@@ -26,6 +26,6 @@ shared temp_stock_data_DataDestination = let
   Pattern = Lakehouse.Contents([CreateNavigationProperties = false, EnableFolding = false]),
   Navigation_1 = Pattern{[workspaceId = "81da3283-2446-4563-9f8c-168297009931"]}[Data],
   Navigation_2 = Navigation_1{[lakehouseId = "5cb9ed76-988c-4842-a3b3-b08c21c8139c"]}[Data],
-  TableNavigation = Navigation_2{[Id = "temp_stock_data", ItemKind = "Table"]}[Data]
+  TableNavigation = Navigation_2{[Id = "stock_data", ItemKind = "Table"]}[Data]
 in
   TableNavigation;
