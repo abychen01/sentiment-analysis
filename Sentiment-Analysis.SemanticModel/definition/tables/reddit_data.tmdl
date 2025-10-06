@@ -1,0 +1,167 @@
+table reddit_data
+	lineageTag: fb2f3046-831a-4760-8fd1-3822e763516b
+
+	measure 'Positive Count' = ```
+			
+			    var counts =
+			        CALCULATE(
+			            COUNTROWS(reddit_data),  
+			            reddit_data[sentiment_label] = "positive"
+			        )
+			    RETURN IF(ISBLANK(counts),0,counts)
+			```
+		formatString: 0
+		lineageTag: e86a122f-6272-4101-af32-c58d0c3d43b8
+
+	measure 'Neutral Count' = ```
+			
+			    var counts =
+			        CALCULATE(
+			            COUNTROWS(reddit_data),  
+			            reddit_data[sentiment_label] = "neutral"
+			        )
+			    RETURN IF(ISBLANK(counts),0,counts)
+			```
+		formatString: 0
+		lineageTag: 48a43058-672b-4978-ac2a-a7d8bcc6163a
+
+	measure 'Negative Count' = ```
+			
+			    var counts =
+			        CALCULATE(
+			            COUNTROWS(reddit_data),  
+			            reddit_data[sentiment_label] = "negative"
+			        )
+			    RETURN IF(ISBLANK(counts),0,counts)
+			```
+		formatString: 0
+		lineageTag: 464e15d4-bbdd-4ce0-8b2f-b1f8a755d023
+
+	measure 'Sentiment Score' = ```
+			[Positive Count] - [Negative Count]
+			 
+			```
+		formatString: 0
+		lineageTag: 608a15c3-10ce-4603-aa45-58b1db67f8d6
+
+	measure Agreement =
+			
+			VAR Diff = stock_data[difference to prev closing]
+			VAR Sentiment = reddit_data[Sentiment Score]
+			RETURN
+			IF(
+			    Diff = 0, // First condition: Check for zero price change
+			    BLANK(),  // If true, return BLANK (exclude from count)
+			    IF(       // If false, check the next condition...
+			        (Diff > 0 && Sentiment >= 0) || (Diff < 0 && Sentiment < 0),
+			        1,    // If either agreement condition is true, return 1
+			        0     // If all conditions are false, it's a disagreement, return 0
+			    )
+			)
+		formatString: 0
+		lineageTag: 59999f5f-43b5-400f-a12f-9987757b69b1
+
+	measure 'Relation Percentage' =
+			
+			VAR valid_Days =
+			    COUNTROWS ( FILTER ( reddit_data, NOT ISBLANK ( reddit_data[Sentiment Score] ) && NOT ISBLANK ( [difference to prev closing] ) ) )
+			VAR agreement_count =
+			    COUNTROWS (
+			        FILTER (
+			            reddit_data,
+			            SIGN ( reddit_data[Sentiment Score] ) = SIGN ( [difference to prev closing] )
+			        )
+			    )
+			RETURN
+			    DIVIDE ( agreement_count, valid_Days, 0 )
+		formatString: 0.00%;-0.00%;0.00%
+		lineageTag: 5fb380e1-8804-427d-92ee-de04858d952a
+
+	measure 'post count' = ```
+			
+			    CALCULATE(
+			        COUNT(reddit_data[sentiment_label])
+			    )
+			```
+		formatString: 0
+		lineageTag: 1f102ffc-6cbe-47ed-a673-3052d0017282
+
+	column subreddit_name
+		dataType: string
+		lineageTag: 3d56b7d2-5666-43d3-a6ce-ad343d8138d9
+		summarizeBy: none
+		sourceColumn: subreddit_name
+
+		annotation SummarizationSetBy = Automatic
+
+	column post_title
+		dataType: string
+		lineageTag: 138488cb-4486-4891-99f8-ab0e4656d3f5
+		summarizeBy: none
+		sourceColumn: post_title
+
+		annotation SummarizationSetBy = Automatic
+
+	column score
+		dataType: int64
+		formatString: 0
+		lineageTag: d6286fbd-0d14-4281-848b-e62d1a558b59
+		summarizeBy: sum
+		sourceColumn: score
+
+		annotation SummarizationSetBy = Automatic
+
+	column time_utc
+		dataType: dateTime
+		formatString: General Date
+		lineageTag: e2e314da-aa5f-423a-9d28-482851424753
+		summarizeBy: none
+		sourceColumn: time_utc
+
+		variation Variation
+			isDefault
+			relationship: c6475ed4-ddff-49b7-a244-c33774f35e2a
+			defaultHierarchy: LocalDateTable_9ceede7d-85cc-4d95-8b6b-0900c27ff55c.'Date Hierarchy'
+
+		annotation SummarizationSetBy = Automatic
+
+	column time_est
+		dataType: dateTime
+		formatString: Long Date
+		lineageTag: b5fb50f0-8c48-40dc-998d-90a6d644644c
+		summarizeBy: none
+		sourceColumn: time_est
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation UnderlyingDateTimeDataType = Date
+
+	column ticker_id
+		dataType: string
+		lineageTag: efa83d1f-cf14-4fd2-9afa-cd3ee92c3d99
+		summarizeBy: none
+		sourceColumn: ticker_id
+
+		annotation SummarizationSetBy = Automatic
+
+	column sentiment_label
+		dataType: string
+		lineageTag: e6f4ac65-2466-4c1d-beb4-bd02bcbb3c1b
+		summarizeBy: none
+		sourceColumn: sentiment_label
+
+		annotation SummarizationSetBy = Automatic
+
+	partition reddit_data = m
+		mode: import
+		source =
+				let
+				    Source = Sql.Database("myfreesqldbserver66.database.windows.net", "myFreeDB"),
+				    dbo_reddit_data = Source{[Schema="dbo",Item="reddit_data"]}[Data]
+				in
+				    dbo_reddit_data
+
+	annotation PBI_NavigationStepName = Navigation
+
+	annotation PBI_ResultType = Table
+

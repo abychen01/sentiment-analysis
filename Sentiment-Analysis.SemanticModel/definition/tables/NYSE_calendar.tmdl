@@ -1,0 +1,119 @@
+table NYSE_calendar
+	lineageTag: 50857e02-e06a-445f-ae40-aa693d9ef408
+	dataCategory: Time
+
+	column Date
+		dataType: dateTime
+		isKey
+		formatString: Short Date
+		lineageTag: ece39053-499f-4941-8694-162c28a7fed2
+		summarizeBy: none
+		sourceColumn: Date
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation UnderlyingDateTimeDataType = Date
+
+	column Year
+		dataType: int64
+		formatString: 0
+		lineageTag: f25a1b5c-c0c7-4032-9825-88b9c617c40e
+		summarizeBy: sum
+		sourceColumn: Year
+
+		annotation SummarizationSetBy = Automatic
+
+	column Quarter
+		dataType: int64
+		formatString: 0
+		lineageTag: 7ad7c5cf-574d-49c8-8e45-ca7debfed75e
+		summarizeBy: sum
+		sourceColumn: Quarter
+
+		annotation SummarizationSetBy = Automatic
+
+	column Month
+		dataType: int64
+		formatString: 0
+		lineageTag: 59e8e8c0-521a-4e41-b797-d247f325e8d6
+		summarizeBy: sum
+		sourceColumn: Month
+
+		annotation SummarizationSetBy = Automatic
+
+	column week_of_year
+		dataType: int64
+		formatString: 0
+		lineageTag: 78ed6c1f-4b12-4fe2-913a-637e1df5eee2
+		summarizeBy: sum
+		sourceColumn: week_of_year
+
+		annotation SummarizationSetBy = Automatic
+
+	column Day
+		dataType: int64
+		formatString: 0
+		lineageTag: 8741f25f-829f-4650-80a1-3b71b8622618
+		summarizeBy: sum
+		sourceColumn: Day
+
+		annotation SummarizationSetBy = Automatic
+
+	column day_name
+		dataType: string
+		lineageTag: 931f5b36-d15f-484f-903a-9aa93505065f
+		summarizeBy: none
+		sourceColumn: day_name
+
+		annotation SummarizationSetBy = Automatic
+
+	column NYSE_holiday
+		dataType: boolean
+		formatString: """TRUE"";""TRUE"";""FALSE"""
+		lineageTag: 09d26d69-a78b-4d27-8012-a7ed7fe353d4
+		summarizeBy: none
+		sourceColumn: NYSE_holiday
+
+		annotation SummarizationSetBy = Automatic
+
+	column month_name = FORMAT(NYSE_calendar[Date],"MMMM")
+		lineageTag: 6f4db5c8-6d4c-4fbc-8ec5-1b804775e678
+		summarizeBy: none
+		sortByColumn: Month
+
+		changedProperty = SortByColumn
+
+		annotation SummarizationSetBy = Automatic
+
+	hierarchy 'Date Hierarchy'
+		lineageTag: 6f0bfcbf-51b9-480a-9dce-7d4f1485a9e8
+
+		level Year
+			lineageTag: 38c03dd5-d975-45f5-a8c1-0be3d79aaba7
+			column: Year
+
+		level Quarter
+			lineageTag: f553fd58-3c0c-4349-8d5d-bd3e525f7618
+			column: Quarter
+
+		level Month
+			lineageTag: 77862f08-78c2-47f5-94cc-45645a287943
+			column: Month
+
+		level Day
+			lineageTag: 1f9605a9-d6b5-4d7d-8999-bb8d0d7a2d60
+			column: Day
+
+	partition NYSE_calendar = m
+		mode: import
+		source =
+				let
+				    Source = Sql.Database("myfreesqldbserver66.database.windows.net", "myFreeDB"),
+				    dbo_NYSE_calendar = Source{[Schema="dbo",Item="NYSE_calendar"]}[Data]
+				in
+				    dbo_NYSE_calendar
+
+	annotation PBI_NavigationStepName = Navigation
+
+	annotation PBI_ResultType = Table
+
