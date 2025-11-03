@@ -16,7 +16,7 @@
       "queryName": "NYSE_calendar"
     },
     "NYSE_calendar_DataDestination": {
-      "queryId": "fac67e0a-8973-44e5-9d45-2dc17fb38850",
+      "queryId": "f6274c5e-fa0f-463e-9c4e-9d4a68d5c6d7",
       "queryName": "NYSE_calendar_DataDestination",
       "isHidden": true,
       "loadEnabled": false
@@ -31,7 +31,7 @@
     {
       "path": "Warehouse",
       "kind": "Warehouse",
-      "connectionId": "{\"ClusterId\":\"fd9450ed-e905-4202-a7a7-8b6159a3f846\",\"DatasourceId\":\"2570267e-d898-4485-bffd-371daa229d9e\"}"
+      "connectionId": "{\"ClusterId\":\"fd9450ed-e905-4202-a7a7-8b6159a3f846\",\"DatasourceId\":\"54a50e86-3658-476d-ab0b-67751e06b55d\"}"
     }
   ]
 }
