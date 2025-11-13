@@ -23,6 +23,10 @@
 # META   }
 # META }
 
+# MARKDOWN ********************
+
+# #### Imports
+
 # CELL ********************
 
 import pyodbc, os
@@ -35,6 +39,10 @@ from azure.keyvault.secrets import SecretClient
 # META   "language": "python",
 # META   "language_group": "synapse_pyspark"
 # META }
+
+# MARKDOWN ********************
+
+# #### Definitions
 
 # CELL ********************
 
@@ -50,17 +58,6 @@ credential = DefaultAzureCredential()
 client = SecretClient(vault_url=vault_url, credential=credential)
 
 password = client.get_secret("sql-server-password").value
-
-
-
-# METADATA ********************
-
-# META {
-# META   "language": "python",
-# META   "language_group": "synapse_pyspark"
-# META }
-
-# CELL ********************
 
 
 table_list = ["Stock_Data.NYSE_calendar","Stock_Data.stock_data","reddit_data"]
@@ -98,6 +95,10 @@ conn_str = (
 # META   "language_group": "synapse_pyspark"
 # META }
 
+# MARKDOWN ********************
+
+# #### DB check
+
 # CELL ********************
 
 with pyodbc.connect(conn_str_master, autocommit=True) as conn:
@@ -128,6 +129,10 @@ with pyodbc.connect(conn_str_master, autocommit=True) as conn:
 # META   "language": "python",
 # META   "language_group": "synapse_pyspark"
 # META }
+
+# MARKDOWN ********************
+
+# #### Table check
 
 # CELL ********************
 
@@ -192,6 +197,10 @@ for table in table_list_sql:
 # META   "language_group": "synapse_pyspark"
 # META }
 
+# MARKDOWN ********************
+
+# #### Write
+
 # CELL ********************
 
 
@@ -254,31 +263,31 @@ for table in table_list:
 # META   "language_group": "synapse_pyspark"
 # META }
 
+# MARKDOWN ********************
+
+# #### Testing
+
 # CELL ********************
 
 # testing.....
 
 '''
-
-for table in table_list_sql:
-    
-
-    with pyodbc.connect(conn_str,autocommit=True) as conn:
-        with conn.cursor() as cursor:
-            cursor.execute("""
-                
-                EXEC('SELECT * FROM [' + ? + ']'
-                
+with pyodbc.connect(conn_str,autocommit=True) as conn:
+    with conn.cursor() as cursor:
+        cursor.execute("""
             
-            )""",table)
+            EXEC('SELECT * FROM [' + ? + ']'
             
-            print(table)
-            while True:
-                result = cursor.fetchall()
-                if result:
-                    print(result[0])
-                if not cursor.nextset():
-                    break
+        
+        )""",table)
+        
+        print(table)
+        while True:
+            result = cursor.fetchall()
+            if result:
+                print(result[0])
+            if not cursor.nextset():
+                break
 
 
 '''
@@ -294,7 +303,7 @@ for table in table_list_sql:
 
 
 # create ticker table
-
+'''
 
 with pyodbc.connect(conn_str, autocommit=True) as conn:
     with conn.cursor() as cursor:
@@ -330,32 +339,7 @@ with pyodbc.connect(conn_str, autocommit=True) as conn:
         
         ""","ticker","ticker","ticker","ticker")
 
-
-
-# METADATA ********************
-
-# META {
-# META   "language": "python",
-# META   "language_group": "synapse_pyspark"
-# META }
-
-# CELL ********************
-
-#testing...abs
-from pyspark.sql.functions import col
-
-df = spark.sql("SELECT * FROM Reddit.reddit_data")
-display(df.groupBy(col('time_est')).count())
-
-# METADATA ********************
-
-# META {
-# META   "language": "python",
-# META   "language_group": "synapse_pyspark"
-# META }
-
-# CELL ********************
-
+'''
 
 # METADATA ********************
 
