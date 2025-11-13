@@ -8,12 +8,12 @@
 # META   },
 # META   "dependencies": {
 # META     "lakehouse": {
-# META       "default_lakehouse": "5cb9ed76-988c-4842-a3b3-b08c21c8139c",
-# META       "default_lakehouse_name": "Stock__Data",
-# META       "default_lakehouse_workspace_id": "81da3283-2446-4563-9f8c-168297009931",
+# META       "default_lakehouse": "8c338b2f-ab3a-4354-bdc7-d89db7abf459",
+# META       "default_lakehouse_name": "Stock",
+# META       "default_lakehouse_workspace_id": "fa56728c-4e8f-4cf0-b06b-130982363f52",
 # META       "known_lakehouses": [
 # META         {
-# META           "id": "5cb9ed76-988c-4842-a3b3-b08c21c8139c"
+# META           "id": "8c338b2f-ab3a-4354-bdc7-d89db7abf459"
 # META         }
 # META       ]
 # META     }
@@ -87,6 +87,7 @@ final_spark_df.write.mode("overwrite").format("delta").saveAsTable("stock_data")
 # CELL ********************
 
 df = spark.read.table("stock_data")
+print(df.count())
 display(df.sort(desc("Date")))
 
 # METADATA ********************
