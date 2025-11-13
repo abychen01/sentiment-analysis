@@ -49,9 +49,9 @@ vault_url = "https://vaultforfabric.vault.azure.net/"
 credential = DefaultAzureCredential()
 client = SecretClient(vault_url=vault_url, credential=credential)
 
-reddit_id = client.get_secret("redditID").value
-reddit_secret = client.get_secret("redditSecret").value
-reddit_user_agent = client.get_secret("redditUserAgent").value
+password = client.get_secret("sql-server-password").value
+
+
 
 # METADATA ********************
 
@@ -62,18 +62,6 @@ reddit_user_agent = client.get_secret("redditUserAgent").value
 
 # CELL ********************
 
-display(spark.read.parquet('Files/creds'))
-
-# METADATA ********************
-
-# META {
-# META   "language": "python",
-# META   "language_group": "synapse_pyspark"
-# META }
-
-# CELL ********************
-
-password = spark.read.parquet("Files/creds").collect()[0]['password']
 
 table_list = ["Stock_Data.NYSE_calendar","Stock_Data.stock_data","reddit_data"]
 table_list_sql = ["Date","NYSE_calendar","stock_data","reddit_data"]
@@ -118,8 +106,6 @@ with pyodbc.connect(conn_str_master, autocommit=True) as conn:
             IF NOT EXISTS (SELECT name FROM sys.databases WHERE name = ?)
                 BEGIN
                 SELECT ? + 'doesnt exist';
-                EXEC('CREATE DATABASE ' + ?);
-                SELECT ? + ' created';
                 END
             ELSE
                 BEGIN
@@ -208,8 +194,6 @@ for table in table_list_sql:
 
 # CELL ********************
 
-jdbc_url_aws_rds = f"jdbc:sqlserver://fabric-rds-sql-server.cxm8ga0awaka.eu-north-1.rds.amazonaws.com:1433;\
-            databaseName={db};encrypt=true;trustServerCertificate=true"
 
 jdbc_url = "jdbc:sqlserver://myfreesqldbserver66.database.windows.net:1433;" \
            "databaseName=myFreeDB;" \
@@ -347,6 +331,21 @@ with pyodbc.connect(conn_str, autocommit=True) as conn:
         ""","ticker","ticker","ticker","ticker")
 
 
+
+# METADATA ********************
+
+# META {
+# META   "language": "python",
+# META   "language_group": "synapse_pyspark"
+# META }
+
+# CELL ********************
+
+#testing...abs
+from pyspark.sql.functions import col
+
+df = spark.sql("SELECT * FROM Reddit.reddit_data")
+display(df.groupBy(col('time_est')).count())
 
 # METADATA ********************
 
