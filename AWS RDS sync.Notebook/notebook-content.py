@@ -8,15 +8,15 @@
 # META   },
 # META   "dependencies": {
 # META     "lakehouse": {
-# META       "default_lakehouse": "f8400f71-0acf-4158-b761-0b86bf4c9f15",
-# META       "default_lakehouse_name": "Reddit__Data",
-# META       "default_lakehouse_workspace_id": "81da3283-2446-4563-9f8c-168297009931",
+# META       "default_lakehouse": "54b3eb0f-12b7-496e-a704-f423005a6a09",
+# META       "default_lakehouse_name": "Reddit",
+# META       "default_lakehouse_workspace_id": "fa56728c-4e8f-4cf0-b06b-130982363f52",
 # META       "known_lakehouses": [
 # META         {
-# META           "id": "5cb9ed76-988c-4842-a3b3-b08c21c8139c"
+# META           "id": "54b3eb0f-12b7-496e-a704-f423005a6a09"
 # META         },
 # META         {
-# META           "id": "f8400f71-0acf-4158-b761-0b86bf4c9f15"
+# META           "id": "8c338b2f-ab3a-4354-bdc7-d89db7abf459"
 # META         }
 # META       ]
 # META     }
@@ -25,7 +25,44 @@
 
 # CELL ********************
 
-import pyodbc
+import pyodbc, os
+from azure.identity import DefaultAzureCredential
+from azure.keyvault.secrets import SecretClient
+
+# METADATA ********************
+
+# META {
+# META   "language": "python",
+# META   "language_group": "synapse_pyspark"
+# META }
+
+# CELL ********************
+
+df_creds = spark.read.parquet('Files/creds')
+
+os.environ["AZURE_CLIENT_ID"] = df_creds.collect()[0]["AZURE_CLIENT_ID"]
+os.environ["AZURE_TENANT_ID"] = df_creds.collect()[0]["AZURE_TENANT_ID"]
+os.environ["AZURE_CLIENT_SECRET"] = df_creds.collect()[0]["AZURE_CLIENT_SECRET"]
+
+
+vault_url = "https://vaultforfabric.vault.azure.net/"
+credential = DefaultAzureCredential()
+client = SecretClient(vault_url=vault_url, credential=credential)
+
+reddit_id = client.get_secret("redditID").value
+reddit_secret = client.get_secret("redditSecret").value
+reddit_user_agent = client.get_secret("redditUserAgent").value
+
+# METADATA ********************
+
+# META {
+# META   "language": "python",
+# META   "language_group": "synapse_pyspark"
+# META }
+
+# CELL ********************
+
+display(spark.read.parquet('Files/creds'))
 
 # METADATA ********************
 
