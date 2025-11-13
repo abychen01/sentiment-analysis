@@ -15,7 +15,7 @@
       "queryName": "latest_date"
     },
     "temp_stock_data_DataDestination": {
-      "queryId": "985b4691-5b74-469e-8d19-97d7928ef442",
+      "queryId": "2fe6985d-e474-4a86-b304-bf50cd4e9fb1",
       "queryName": "temp_stock_data_DataDestination",
       "isHidden": true,
       "loadEnabled": false
@@ -30,7 +30,7 @@
     {
       "path": "Lakehouse",
       "kind": "Lakehouse",
-      "connectionId": "{\"ClusterId\":\"fd9450ed-e905-4202-a7a7-8b6159a3f846\",\"DatasourceId\":\"c0819bcc-9ecc-4b97-8a9c-68355c20079b\"}"
+      "connectionId": "{\"ClusterId\":\"fd9450ed-e905-4202-a7a7-8b6159a3f846\",\"DatasourceId\":\"e4b73107-5541-4258-9700-4acf651c5949\"}"
     }
   ]
 }
