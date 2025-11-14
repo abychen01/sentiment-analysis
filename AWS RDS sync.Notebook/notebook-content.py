@@ -60,7 +60,7 @@ client = SecretClient(vault_url=vault_url, credential=credential)
 password = client.get_secret("sql-server-password").value
 
 
-table_list = ["Stock_Data.NYSE_calendar","Stock_Data.stock_data","reddit_data"]
+table_list = ["Stock_Data.stock_data","reddit_data"]
 table_list_sql = ["Date","NYSE_calendar","stock_data","reddit_data"]
 
 db = "myFreeDB"
