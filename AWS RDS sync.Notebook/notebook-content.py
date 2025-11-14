@@ -112,7 +112,7 @@ with pyodbc.connect(conn_str_master, autocommit=True) as conn:
                 BEGIN
                 SELECT ? + ' exist';
                 END
-        """,db,db,db,db,db)
+        """,db,db,db)
 
           
         while True:
