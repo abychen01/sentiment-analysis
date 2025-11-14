@@ -221,8 +221,35 @@ def converts2(table_name):
 
     if table_name =="Stock_Data.NYSE_calendar":
         return "NYSE_calendar"
-    if table_name =="Stock_Data.stock_data":
+    if table_name =="Stock.stock_data":
         return "stock_data"
+
+def latest_date(table_name):
+    
+    if table_name == 'reddit_data':
+        date_value = 'time_utc'
+
+    else:
+        date_value = 'Date'
+
+    with pyodbc.connect(conn_str, autocommit=True) as conn:
+        with conn.cursor() as cursor:
+            cursor.execute("""
+
+            EXEC('select top 1 ? from [dbo].[reddit_data]
+            order by ? desc')
+
+            """, date_value, table_name, date_value)
+
+            while True:
+            
+                result = cursor.fetchall()
+                if result:
+                    print(result[0])
+                if not cursor.nextset():
+                    break
+
+    print('latest_date is',table_name)
 
 for table in table_list:
 
@@ -232,11 +259,14 @@ for table in table_list:
             df = df.withColumnsRenamed({"Week of year": "week_of_year", "Day name": "day_name"})
             mode = "overwrite"
         else:
-            mode = "overwrite"
+            mode = "append"
 
         if table != "reddit_data":
             table = converts2(table)
         
+        if table == 'reddit_data' or 'stock_data':
+            print('Table name is ',table,'and sending to the fn')
+
         df.write \
             .format("jdbc") \
             .option("url", jdbc_url) \
@@ -247,6 +277,7 @@ for table in table_list:
             .option("batchsize", 1000) \
             .mode(mode) \
             .save()
+
         print(f"Successfully wrote data to RDS table '{table}'.")
 
 

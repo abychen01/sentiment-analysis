@@ -49,6 +49,9 @@ import pyodbc, calendar, os, praw
 from textblob import TextBlob
 from pyspark.sql.functions import *
 from pyspark.sql.types import *
+from transformers import pipeline
+from transformers import AutoTokenizer, AutoModelForSequenceClassification
+import torch
 
 
 # METADATA ********************
@@ -226,11 +229,6 @@ df = df.drop("ticker","actual_ticker")
 
 # Sentiment Analysis UDFs (RoBERTa + FinBERT)
 
-from pyspark.sql.functions import *
-from pyspark.sql.types import StringType
-from transformers import pipeline
-from transformers import AutoTokenizer, AutoModelForSequenceClassification
-import torch
 
 # Load pre-trained BERT sentiment model
 sentiment_pipeline = pipeline("sentiment-analysis", model="cardiffnlp/twitter-roberta-base-sentiment")
