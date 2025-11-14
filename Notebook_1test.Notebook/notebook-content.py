@@ -20,6 +20,10 @@
 # META   }
 # META }
 
+# MARKDOWN ********************
+
+# #### lib installation
+
 # CELL ********************
 
 pip install praw textblob
@@ -31,13 +35,18 @@ pip install praw textblob
 # META   "language_group": "synapse_pyspark"
 # META }
 
+# MARKDOWN ********************
+
+# #### imports
+
 # CELL ********************
 
 
 from azure.identity import DefaultAzureCredential
 from azure.keyvault.secrets import SecretClient
 
-import pyodbc, calendar, os
+import pyodbc, calendar, os, praw
+from textblob import TextBlob
 from pyspark.sql.functions import *
 from pyspark.sql.types import *
 
@@ -48,6 +57,10 @@ from pyspark.sql.types import *
 # META   "language": "python",
 # META   "language_group": "synapse_pyspark"
 # META }
+
+# MARKDOWN ********************
+
+# #### Declarations
 
 # CELL ********************
 
@@ -65,29 +78,8 @@ client = SecretClient(vault_url=vault_url, credential=credential)
 reddit_id = client.get_secret("redditID").value
 reddit_secret = client.get_secret("redditSecret").value
 reddit_user_agent = client.get_secret("redditUserAgent").value
-
-
-# METADATA ********************
-
-# META {
-# META   "language": "python",
-# META   "language_group": "synapse_pyspark"
-# META }
-
-# CELL ********************
-
-# Reddit API Authentication using PRAW
-
-import praw
-from textblob import TextBlob
-
-reddit = praw.Reddit(
-    client_id=reddit_id,
-    client_secret=reddit_secret,
-    user_agent=reddit_user_agent
-)
-
 server_password = client.get_secret("sql-server-password").value
+
 
 conn_str = (
             f"DRIVER={{ODBC Driver 18 for SQL Server}};"
@@ -126,6 +118,27 @@ subreddit_schema = StructType([
 ticker_schema = StructType([
     StructField("ticker", ArrayType(StringType()), True)  # Only an array column
 ])
+
+
+# METADATA ********************
+
+# META {
+# META   "language": "python",
+# META   "language_group": "synapse_pyspark"
+# META }
+
+# MARKDOWN ********************
+
+# #### Reddit pull
+
+# CELL ********************
+
+
+reddit = praw.Reddit(
+    client_id=reddit_id,
+    client_secret=reddit_secret,
+    user_agent=reddit_user_agent
+)
 
 
 # Create DataFrame
@@ -205,16 +218,9 @@ df = df.drop("ticker","actual_ticker")
 # META   "language_group": "synapse_pyspark"
 # META }
 
-# CELL ********************
+# MARKDOWN ********************
 
-pip install textblob
-
-# METADATA ********************
-
-# META {
-# META   "language": "python",
-# META   "language_group": "synapse_pyspark"
-# META }
+# #### finbert_sentiment
 
 # CELL ********************
 
