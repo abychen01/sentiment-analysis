@@ -30,6 +30,7 @@
 # CELL ********************
 
 import pyodbc, os
+from pyspark.sql.functions import col, lit
 from azure.identity import DefaultAzureCredential
 from azure.keyvault.secrets import SecretClient
 
@@ -224,6 +225,7 @@ def converts2(table_name):
     if table_name =="Stock.stock_data":
         return "stock_data"
 
+
 def latest_date(table_name):
     
     if table_name == 'reddit_data':
@@ -236,8 +238,8 @@ def latest_date(table_name):
         with conn.cursor() as cursor:
             cursor.execute("""
 
-            EXEC('select top 1 ? from [dbo].[reddit_data]
-            order by ? desc')
+                EXEC('select top 1 [' + ? + '] from [' + ? + ']
+                        order by [' + ? + '] desc')
 
             """, date_value, table_name, date_value)
 
@@ -246,10 +248,12 @@ def latest_date(table_name):
                 result = cursor.fetchall()
                 if result:
                     print(result[0])
+
                 if not cursor.nextset():
                     break
 
     print('latest_date is',table_name)
+    return result[0]
 
 for table in table_list:
 
@@ -266,6 +270,7 @@ for table in table_list:
         
         if table == 'reddit_data' or 'stock_data':
             print('Table name is ',table,'and sending to the fn')
+
 
         df.write \
             .format("jdbc") \
@@ -371,6 +376,110 @@ with pyodbc.connect(conn_str, autocommit=True) as conn:
         ""","ticker","ticker","ticker","ticker")
 
 '''
+
+# METADATA ********************
+
+# META {
+# META   "language": "python",
+# META   "language_group": "synapse_pyspark"
+# META }
+
+# CELL ********************
+
+
+jdbc_url = "jdbc:sqlserver://myfreesqldbserver66.database.windows.net:1433;" \
+           "databaseName=myFreeDB;" \
+           "encrypt=true;" \
+           "trustServerCertificate=false;" \
+           "hostNameInCertificate=*.database.windows.net;" \
+           "loginTimeout=30;"
+
+jdbc_properties = {
+    "user": "admin2",
+    "password": password,
+    "driver": "com.microsoft.sqlserver.jdbc.SQLServerDriver"
+}
+
+def converts2(table_name):
+
+    if table_name =="Stock_Data.NYSE_calendar":
+        return "NYSE_calendar"
+    if table_name =="Stock.stock_data":
+        return "stock_data"
+
+
+def latest_date(table_name, date_value):
+
+    with pyodbc.connect(conn_str, autocommit=True) as conn:
+        with conn.cursor() as cursor:
+            cursor.execute("""
+
+                EXEC('select top 1 [' + ? + '] from [' + ? + ']
+                        order by [' + ? + '] desc')
+
+            """, date_value, table_name, date_value)
+
+            while True:
+            
+                result = cursor.fetchall()
+                if result:
+                    print()
+
+                if not cursor.nextset():
+                    break
+
+    return result[0]
+
+for table in table_list:
+
+    try:
+        df = spark.read.table(table)
+        if table == "Stock_Data.NYSE_calendar":
+            df = df.withColumnsRenamed({"Week of year": "week_of_year", "Day name": "day_name"})
+            mode = "overwrite"
+        else:
+            mode = "append"
+
+        if table != "reddit_data":
+            table = converts2(table)
+        
+        if table == 'reddit_data':
+            date_value = 'time_utc'
+        else:
+            date_value = 'Date'
+
+
+        if table == 'reddit_data' or 'stock_data':
+            fn_return = latest_date(table, date_value)
+
+        df = df.where(col(date_value)>(fn_return[0]))
+
+        df.write \
+            .format("jdbc") \
+            .option("url", jdbc_url) \
+            .option("dbtable", table) \
+            .option("user", jdbc_properties["user"]) \
+            .option("password", jdbc_properties["password"]) \
+            .option("driver", jdbc_properties["driver"]) \
+            .option("batchsize", 1000) \
+            .mode(mode) \
+            .save()
+
+        print(f"Successfully wrote data to RDS table '{table}'.")
+
+    except Exception as e:
+        print(f"Failed to write to RDS: {e}")
+        raise
+
+# METADATA ********************
+
+# META {
+# META   "language": "python",
+# META   "language_group": "synapse_pyspark"
+# META }
+
+# CELL ********************
+
 
 # METADATA ********************
 
