@@ -30,7 +30,7 @@
     {
       "path": "Lakehouse",
       "kind": "Lakehouse",
-      "connectionId": "{\"ClusterId\":\"fd9450ed-e905-4202-a7a7-8b6159a3f846\",\"DatasourceId\":\"e4b73107-5541-4258-9700-4acf651c5949\"}"
+      "connectionId": "{\"ClusterId\":\"fd9450ed-e905-4202-a7a7-8b6159a3f846\",\"DatasourceId\":\"c57fb46e-df76-4e6d-9191-07eaabc124b1\"}"
     }
   ]
 }

@@ -1,0 +1,151 @@
+{
+  "properties": {
+    "activities": [
+      {
+        "type": "TridentNotebook",
+        "typeProperties": {
+          "notebookId": "134e1282-2cdb-a06a-4b81-45e8bba8981a",
+          "workspaceId": "00000000-0000-0000-0000-000000000000"
+        },
+        "policy": {
+          "timeout": "0.12:00:00",
+          "retry": 2,
+          "retryIntervalInSeconds": 30,
+          "secureInput": false,
+          "secureOutput": false
+        },
+        "name": "Daily reddit data",
+        "dependsOn": []
+      },
+      {
+        "type": "Lookup",
+        "typeProperties": {
+          "source": {
+            "type": "DataWarehouseSource",
+            "sqlReaderQuery": "select NYSE_holiday from NYSE_calendar where Date = CAST(GETDATE() as DATE)",
+            "partitionOption": "None",
+            "queryTimeout": "02:00:00"
+          },
+          "datasetSettings": {
+            "type": "DataWarehouseTable",
+            "schema": [],
+            "linkedService": {
+              "name": "StagingWarehouseForDataflows_20251223220624",
+              "properties": {
+                "type": "DataWarehouse",
+                "typeProperties": {
+                  "artifactId": "2593cb7f-7eac-4662-8cf4-777be24bd84d",
+                  "endpoint": "zhmk23ikgfteve2k3efvtgnvwa-soenditu3ahu3a6wshjo2pm57i.datawarehouse.fabric.microsoft.com",
+                  "workspaceId": "a2d18893-d874-4d0f-83d6-91d2ed3d9dfa"
+                },
+                "annotations": []
+              }
+            },
+            "annotations": []
+          }
+        },
+        "policy": {
+          "timeout": "0.12:00:00",
+          "retry": 2,
+          "retryIntervalInSeconds": 30,
+          "secureInput": false,
+          "secureOutput": false
+        },
+        "name": "Lookup for NYSE_holiday",
+        "dependsOn": [
+          {
+            "activity": "Daily reddit data",
+            "dependencyConditions": [
+              "Succeeded"
+            ]
+          }
+        ]
+      },
+      {
+        "type": "IfCondition",
+        "typeProperties": {
+          "expression": {
+            "value": "@equals(activity('Lookup for NYSE_holiday').output.firstRow.NYSE_holiday, false)",
+            "type": "Expression"
+          },
+          "ifTrueActivities": [
+            {
+              "type": "TridentNotebook",
+              "typeProperties": {
+                "notebookId": "be004021-947d-9105-4fde-b3c545c1d2ea",
+                "workspaceId": "00000000-0000-0000-0000-000000000000"
+              },
+              "policy": {
+                "timeout": "0.12:00:00",
+                "retry": 2,
+                "retryIntervalInSeconds": 30,
+                "secureInput": false,
+                "secureOutput": false
+              },
+              "name": "Daily stock data",
+              "dependsOn": []
+            },
+            {
+              "type": "RefreshDataflow",
+              "typeProperties": {
+                "dataflowId": "9d60242a-a826-89bc-4bbc-1d872a35ee35",
+                "workspaceId": "00000000-0000-0000-0000-000000000000",
+                "notifyOption": "NoNotification",
+                "dataflowType": "DataflowFabric"
+              },
+              "policy": {
+                "timeout": "0.12:00:00",
+                "retry": 2,
+                "retryIntervalInSeconds": 30,
+                "secureInput": false,
+                "secureOutput": false
+              },
+              "name": "Daily stock data updata",
+              "dependsOn": [
+                {
+                  "activity": "Daily stock data",
+                  "dependencyConditions": [
+                    "Succeeded"
+                  ]
+                }
+              ]
+            }
+          ],
+          "ifFalseActivities": []
+        },
+        "name": "If Condition1",
+        "dependsOn": [
+          {
+            "activity": "Lookup for NYSE_holiday",
+            "dependencyConditions": [
+              "Succeeded"
+            ]
+          }
+        ]
+      },
+      {
+        "type": "TridentNotebook",
+        "typeProperties": {
+          "notebookId": "a8977fce-8b84-ae29-47ce-9024fb5d2e19",
+          "workspaceId": "00000000-0000-0000-0000-000000000000"
+        },
+        "policy": {
+          "timeout": "0.12:00:00",
+          "retry": 2,
+          "retryIntervalInSeconds": 30,
+          "secureInput": false,
+          "secureOutput": false
+        },
+        "name": "SQL Server sync",
+        "dependsOn": [
+          {
+            "activity": "If Condition1",
+            "dependencyConditions": [
+              "Succeeded"
+            ]
+          }
+        ]
+      }
+    ]
+  }
+}
