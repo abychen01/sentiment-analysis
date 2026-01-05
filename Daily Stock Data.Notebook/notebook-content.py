@@ -33,11 +33,24 @@ pip install yfinance
 
 # CELL ********************
 
-#temp...
 import pyodbc, os
 from pyspark.sql.functions import col, lit
 from azure.identity import DefaultAzureCredential
 from azure.keyvault.secrets import SecretClient
+
+import yfinance as yf
+from pyspark.sql.types import *
+from pyspark.sql.functions import *
+from functools import reduce
+
+# METADATA ********************
+
+# META {
+# META   "language": "python",
+# META   "language_group": "synapse_pyspark"
+# META }
+
+# CELL ********************
 
 df_creds = spark.read.parquet('Files/creds')
 
@@ -63,6 +76,15 @@ conn_str = (
             f"Connect Timeout=30;"
         )
 
+# METADATA ********************
+
+# META {
+# META   "language": "python",
+# META   "language_group": "synapse_pyspark"
+# META }
+
+# CELL ********************
+
 with pyodbc.connect(conn_str, autocommit=True) as conn:
     with conn.cursor() as cursor:
         cursor.execute("""
@@ -73,15 +95,20 @@ with pyodbc.connect(conn_str, autocommit=True) as conn:
         while True:
             result = cursor.fetchall()
             if result:
-                print(result[0])
+                print('first',result[0][0])
             if not cursor.nextset():
                 break
 
+latest_date = result[0][0]
 
-import yfinance as yf
-from pyspark.sql.types import *
-from pyspark.sql.functions import *
-from functools import reduce
+# METADATA ********************
+
+# META {
+# META   "language": "python",
+# META   "language_group": "synapse_pyspark"
+# META }
+
+# CELL ********************
 
 # Deleting the temp_stock_data table
 spark.sql("DROP TABLE IF EXISTS temp_stock_data")
@@ -112,51 +139,8 @@ for ticker in tickers:
 # Combine all DataFrames into one
 final_spark_df = reduce(DataFrame.union, all_stock_data)
 final_spark_df = final_spark_df.withColumn("Date",final_spark_df.Date.cast(DateType()))
-#final_spark_df.write.mode("overwrite").format("delta").saveAsTable("temp_stock_data")
-display(final_spark_df)
-
-# METADATA ********************
-
-# META {
-# META   "language": "python",
-# META   "language_group": "synapse_pyspark"
-# META }
-
-# CELL ********************
-
-import yfinance as yf
-from pyspark.sql.types import *
-from pyspark.sql.functions import *
-from functools import reduce
-
-# Deleting the temp_stock_data table
-spark.sql("DROP TABLE IF EXISTS temp_stock_data")
-
-# Define stock tickers
-ticker_list = ["TSLA", "MSFT", "AAPL", "NVDA", "GOOGL", "AMZN", "META", "AVGO", "TSM"]
-# Define schema
-schema = StructType([
-    StructField("tickers", ArrayType(StringType()), True)
-])
-# Create DataFrame of tickers
-ticker_df = spark.createDataFrame([(ticker_list,)], schema=schema)
-# Extract ticker list from DataFrame
-tickers = ticker_df.collect()[0]["tickers"]  # Convert PySpark DataFrame to Python list
-all_stock_data = []
-for ticker in tickers:
-    # Fetch historical data from Yahoo Finance
-    df = yf.Ticker(ticker).history(period="3d").reset_index()
-    # Convert Pandas DataFrame to PySpark DataFrame
-    spark_df = spark.createDataFrame(df)
-    # Select relevant columns and add ticker name
-    spark_df = spark_df.select("Date", "Close").withColumn("ticker", lit(ticker))
-    # Collect all stock data
-    all_stock_data.append(spark_df)
-# Combine all DataFrames into one
-final_spark_df = reduce(DataFrame.union, all_stock_data)
-final_spark_df = final_spark_df.withColumn("Date",final_spark_df.Date.cast(DateType()))
 final_spark_df.write.mode("overwrite").format("delta").saveAsTable("temp_stock_data")
-
+display(final_spark_df)
 
 # METADATA ********************
 
