@@ -8,7 +8,7 @@ in
   #"Navigation 2";
 [DataDestinations = {[Definition = [Kind = "Reference", QueryName = "NYSE_calendar_DataDestination", IsNewTarget = true], Settings = [Kind = "Manual", AllowCreation = true, ColumnSettings = [Mappings = {[SourceColumnName = "Date", DestinationColumnName = "Date"], [SourceColumnName = "Year", DestinationColumnName = "Year"], [SourceColumnName = "Quarter", DestinationColumnName = "Quarter"], [SourceColumnName = "Month", DestinationColumnName = "Month"], [SourceColumnName = "Week of year", DestinationColumnName = "Week of year"], [SourceColumnName = "Day", DestinationColumnName = "Day"], [SourceColumnName = "Day name", DestinationColumnName = "Day name"], [SourceColumnName = "NYSE_holiday", DestinationColumnName = "NYSE_holiday"]}], DynamicSchema = false, UpdateMethod = [Kind = "Replace"], TypeSettings = [Kind = "Table"]]]}]
 shared NYSE_calendar = let
-    Source = List.Dates(#date(2022,1,1), 1460, #duration(1,0,0,0)),
+    Source = List.Dates(#date(2022,1,1), 1900, #duration(1,0,0,0)),
     #"Converted to table" = Table.FromList(Source, Splitter.SplitByNothing(), null, null, ExtraValues.Error),
     #"Changed column type" = Table.TransformColumnTypes(#"Converted to table", {{"Column1", type date}}),
     #"Renamed columns" = Table.RenameColumns(#"Changed column type", {{"Column1", "Date"}}),
@@ -28,7 +28,10 @@ shared NYSE_calendar = let
         #date(2024,1,1), #date(2024,1,15), #date(2024,2,19), #date(2024,3,29), #date(2024,5,27),
         #date(2024,6,19), #date(2024,7,4), #date(2024,9,2), #date(2024,11,28), #date(2024,12,25),
         #date(2025,1,1), #date(2025,1,20), #date(2025,2,17), #date(2025,4,18), #date(2025,5,26),
-        #date(2025,6,19), #date(2025,7,4), #date(2025,9,1), #date(2025,11,27), #date(2025,12,25)
+        #date(2025,6,19), #date(2025,7,4), #date(2025,9,1), #date(2025,11,27), #date(2025,12,25),
+        #date(2026,1,1), #date(2026,1,19), #date(2026,2,16), #date(2026,4,3), #date(2026,5,25),
+        #date(2026,6,19), #date(2026,7,3), #date(2026,9,7), #date(2026,11,26), #date(2026,12,25)
+
     },
 
     // Add single NYSE_holiday column based on weekends OR holiday list
