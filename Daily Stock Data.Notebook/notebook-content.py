@@ -43,6 +43,8 @@ from pyspark.sql.types import *
 from pyspark.sql.functions import *
 from functools import reduce
 
+from pyspark.sql.types import StringType, StructField, StructType, FloatType, DateType
+
 # METADATA ********************
 
 # META {
@@ -153,6 +155,34 @@ display(final_spark_df)
 
 display(final_spark_df.sort(desc(col("date"))))
 
+
+# METADATA ********************
+
+# META {
+# META   "language": "python",
+# META   "language_group": "synapse_pyspark"
+# META }
+
+# CELL ********************
+
+from pyspark.sql.types import StringType, StructField, StructType, DoubleType, DateType
+from datetime import date
+
+if spark.catalog.tableExists("stock_data") == False:
+
+    stock_data_schema = StructType([
+        StructField("Date", DateType()),
+        StructField("Close", DoubleType()),
+        StructField("ticker", StringType())
+    ]) 
+
+    dummy_data = [(date(2000,1,1),0.0, 'AAPL')]
+
+    stock_data_df = spark.createDataFrame(dummy_data,schema=stock_data_schema)
+    stock_data_df.write.saveAsTable('stock_data')
+
+else:
+    print('Table exists')
 
 # METADATA ********************
 

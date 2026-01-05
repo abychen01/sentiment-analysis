@@ -24,8 +24,8 @@ in
   #"Kept top rows";
 shared temp_stock_data_DataDestination = let
   Pattern = Lakehouse.Contents([HierarchicalNavigation = null, CreateNavigationProperties = false, EnableFolding = false]),
-  Navigation_1 = Pattern{[workspaceId = "fa56728c-4e8f-4cf0-b06b-130982363f52"]}[Data],
-  Navigation_2 = Navigation_1{[lakehouseId = "8c338b2f-ab3a-4354-bdc7-d89db7abf459"]}[Data],
+  Navigation_1 = Pattern{[workspaceId = "a2d18893-d874-4d0f-83d6-91d2ed3d9dfa"]}[Data],
+  Navigation_2 = Navigation_1{[lakehouseId = "05913245-8d89-4d7f-8eee-4582e03c1258"]}[Data],
   TableNavigation = Navigation_2{[Id = "stock_data", ItemKind = "Table"]}[Data]
 in
   TableNavigation;
