@@ -126,8 +126,8 @@
       {
         "type": "TridentNotebook",
         "typeProperties": {
-          "notebookId": "d03d5faf-d307-44f9-9352-f3c28e7f8304",
-          "workspaceId": "a2d18893-d874-4d0f-83d6-91d2ed3d9dfa"
+          "notebookId": "a8977fce-8b84-ae29-47ce-9024fb5d2e19",
+          "workspaceId": "00000000-0000-0000-0000-000000000000"
         },
         "policy": {
           "timeout": "0.12:00:00",
@@ -137,8 +137,6 @@
           "secureOutput": false
         },
         "name": "SQL Server sync",
-        "state": "Inactive",
-        "onInactiveMarkAs": "Succeeded",
         "dependsOn": [
           {
             "activity": "If Condition1",
