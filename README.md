@@ -3,7 +3,7 @@
 An automated ETL pipeline on Microsoft Fabric that aggregates daily Reddit posts and stock prices to enable sentiment-driven market analysis for nine major equities. Each morning, a Spark-based notebook fetches recent subreddit discussions, timestamps them in Eastern Time, and applies a two-stage sentiment model (RoBERTa + FinBERT) before appending results to a Delta Lake table. A conditional workflow step checks the NYSE holiday calendar—skipping stock data retrieval on market closures. On trading days, a second notebook pulls daily closing prices via the Yahoo Finance API into a temporary table. Finally, a dataflow filters out already-stored dates and incrementally merges new price data into the central NYSE_stock_data table. This setup ensures robust, repeatable ingestion of social sentiment and price history, ready for downstream analysis or visualization.
 
 
-[Power BI report](https://app.fabric.microsoft.com/view?r=eyJrIjoiNDA4M2MwMmMtNmFjNC00ZGU2LTkxNzctYzlhZTU3NTYzYjdkIiwidCI6IjZkYWRkOGM5LTMxMGEtNGE2Ni05MzRhLWQ5MGI1OTk5YjViMCJ9)
+[Power BI report](https://app.fabric.microsoft.com/view?r=eyJrIjoiN2NkYjNiNWUtNTY5ZC00YTZhLThhZGEtMjZjNWNlMGNjYjAzIiwidCI6IjZkYWRkOGM5LTMxMGEtNGE2Ni05MzRhLWQ5MGI1OTk5YjViMCJ9)
 
 ## Table of Contents
 
