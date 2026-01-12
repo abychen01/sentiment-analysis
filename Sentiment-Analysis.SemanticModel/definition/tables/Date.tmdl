@@ -1,0 +1,82 @@
+table Date
+	isHidden
+	lineageTag: 1a203163-6ba2-4d0e-a089-dc015e5b2124
+
+	column subreddit_name
+		dataType: string
+		lineageTag: 254333a7-2955-4ca0-b21e-28ed1f848778
+		summarizeBy: none
+		sourceColumn: subreddit_name
+
+		annotation SummarizationSetBy = Automatic
+
+	column post_title
+		dataType: string
+		lineageTag: 999e43c7-8603-4a81-b473-1c8793728139
+		summarizeBy: none
+		sourceColumn: post_title
+
+		annotation SummarizationSetBy = Automatic
+
+	column score
+		dataType: int64
+		formatString: 0
+		lineageTag: 3fb0b0da-ceb2-4975-9239-b1ea62b2faa0
+		summarizeBy: sum
+		sourceColumn: score
+
+		annotation SummarizationSetBy = Automatic
+
+	column time_utc
+		dataType: dateTime
+		formatString: General Date
+		lineageTag: a7f502ac-29d9-4b27-978d-2e253d7ebc24
+		summarizeBy: none
+		sourceColumn: time_utc
+
+		variation Variation
+			isDefault
+			relationship: dd36de24-3450-4273-be51-084d8f2c4ba8
+			defaultHierarchy: LocalDateTable_ae781457-d9d4-4303-bdfd-eb38dfd18a07.'Date Hierarchy'
+
+		annotation SummarizationSetBy = Automatic
+
+	column time_est
+		dataType: string
+		lineageTag: fdce6be8-4a97-442e-ade9-6ec8ecffe8aa
+		summarizeBy: none
+		sourceColumn: time_est
+
+		annotation SummarizationSetBy = Automatic
+
+	column ticker_id
+		dataType: string
+		lineageTag: 3b615b4c-d516-4c6c-8efc-235245a179bf
+		summarizeBy: none
+		sourceColumn: ticker_id
+
+		annotation SummarizationSetBy = Automatic
+
+	column sentiment_label
+		dataType: string
+		lineageTag: 35932bbd-1682-4188-ae82-e0a56c726944
+		summarizeBy: none
+		sourceColumn: sentiment_label
+
+		annotation SummarizationSetBy = Automatic
+
+	partition Date = m
+		mode: import
+		source =
+				let
+				    Source = Sql.Database("myfreesqldbserver66.database.windows.net", "myFreeDB"),
+				    dbo_Date = Source{[Schema="dbo",Item="Date"]}[Data]
+				in
+				    dbo_Date
+
+	changedProperty = IsHidden
+
+	annotation PBI_NavigationStepName = Navigation
+
+	annotation PBI_ResultType = Table
+

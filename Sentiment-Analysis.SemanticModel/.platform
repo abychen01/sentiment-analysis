@@ -1,0 +1,11 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/gitIntegration/platformProperties/2.0.0/schema.json",
+  "metadata": {
+    "type": "SemanticModel",
+    "displayName": "Sentiment-Analysis"
+  },
+  "config": {
+    "version": "2.0",
+    "logicalId": "bfd307ac-7b24-9e49-449e-3a7eccd4aee6"
+  }
+}
